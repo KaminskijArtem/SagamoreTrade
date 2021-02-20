@@ -47,7 +47,7 @@ namespace QuartzScheduler.Jobs
                 }
                 if (text != null)
                 {
-                    string baseUrl = $"sendMessage?chat_id={chatId}&text={StaticCounter.counter}) {text}";
+                    string baseUrl = $"https://api.telegram.org/bot{bot1Token}/sendMessage?chat_id={chatId}&text={StaticCounter.counter}) {text}";
                     StaticCounter.counter++;
                     var client = new HttpClient();
                     await client.GetAsync(baseUrl);
