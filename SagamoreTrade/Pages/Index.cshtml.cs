@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using ConfigurationLibrary;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
+﻿using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -13,16 +8,17 @@ namespace SagamoreTrade.Pages
     public class IndexModel : PageModel
     {
         private readonly ILogger<IndexModel> _logger;
-        private readonly TelegramConfiguration _myConfiguration;
-        public IndexModel(ILogger<IndexModel> logger, IOptions<TelegramConfiguration> myConfiguration)
+        private readonly IConfiguration Configuration;
+        public IndexModel(ILogger<IndexModel> logger, IConfiguration configuration)
         {
             _logger = logger;
-            _myConfiguration = myConfiguration.Value;
+            Configuration = configuration;
         }
 
         public void OnGet()
         {
-            ViewData["Test"] = "ChatId: " + _myConfiguration.ChatId;
+            ViewData["ChatId"] = Configuration["TelegramConfiguration:ChatId"];
+            ViewData["Test"] = Configuration["Test"];
         }
     }
 }

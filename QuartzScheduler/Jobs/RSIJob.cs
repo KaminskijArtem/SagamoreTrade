@@ -5,8 +5,8 @@ using TradingDataLibrary.Interfaces;
 using System.Threading.Tasks;
 using QuartzScheduler.Base;
 using System.Net.Http;
-using ConfigurationLibrary;
 using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Configuration;
 
 namespace QuartzScheduler.Jobs
 {
@@ -14,11 +14,19 @@ namespace QuartzScheduler.Jobs
     {
         readonly string interval = "1h";
         private readonly IRSITradeCandlesService _tradeCandlesService;
-        private readonly TelegramConfiguration _myConfiguration;
-        public RSIJob(IRSITradeCandlesService tradeCandlesService, IOptions<TelegramConfiguration> myConfiguration)
+        private string bot1Token;
+        private string bot2Token;
+        private string chatId;
+
+        private readonly IConfiguration Configuration;
+
+        public RSIJob(IRSITradeCandlesService tradeCandlesService, IConfiguration configuration)
         {
             _tradeCandlesService = tradeCandlesService;
-            _myConfiguration = myConfiguration.Value;
+            Configuration = configuration;
+            bot1Token = Configuration["TelegramConfiguration:Bot1Token"];
+            bot2Token = Configuration["TelegramConfiguration:Bot2Token"];
+            chatId = Configuration["TelegramConfiguration:ChatId"];
         }
         public async Task Execute(IJobExecutionContext context)
         {
@@ -36,7 +44,7 @@ namespace QuartzScheduler.Jobs
             }
             if (text != null)
             {
-                string baseUrl = $"https://api.telegram.org/bot{_myConfiguration.Bot1Token}/sendMessage?chat_id={_myConfiguration.ChatId}&text={StaticCounter.counter}) {text}";
+                string baseUrl = $"https://api.telegram.org/bot{bot1Token}/sendMessage?chat_id={chatId}&text={StaticCounter.counter}) {text}";
                 StaticCounter.counter++;
                 var client = new HttpClient();
                 await client.GetAsync(baseUrl);
@@ -56,7 +64,7 @@ namespace QuartzScheduler.Jobs
             }
             if (text2 != null)
             {
-                string baseUrl = $"https://api.telegram.org/bot{_myConfiguration.Bot2Token}/sendMessage?chat_id={_myConfiguration.ChatId}&text={StaticCounter.counter2}) Пора продавать {text2}";
+                string baseUrl = $"https://api.telegram.org/bot{bot2Token}/sendMessage?chat_id={chatId}&text={StaticCounter.counter2}) Пора продавать {text2}";
                 StaticCounter.counter2++;
                 var client = new HttpClient();
                 await client.GetAsync(baseUrl);
