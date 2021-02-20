@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
+using QuartzScheduler.Logging;
 
 namespace SagamoreTrade.Pages
 {
@@ -13,6 +14,7 @@ namespace SagamoreTrade.Pages
 
         public void OnGet()
         {
+            ViewData["Log"] = StaticLogger.Log;
         }
     }
 }
