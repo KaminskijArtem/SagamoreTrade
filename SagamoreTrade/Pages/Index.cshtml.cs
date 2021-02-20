@@ -22,7 +22,7 @@ namespace SagamoreTrade.Pages
 
         public void OnGet()
         {
-            ViewData["Test"] = _myConfiguration.ChatId;
+            ViewData["Test"] = "ChatId: " + _myConfiguration.ChatId;
         }
     }
 }
