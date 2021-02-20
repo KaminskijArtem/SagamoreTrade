@@ -75,7 +75,7 @@ namespace QuartzScheduler.Jobs
             }
             catch (Exception ex)
             {
-                StaticLogger.LogMessage($"{DateTime.UtcNow} {ex.Message}");
+                StaticLogger.LogMessage($"{DateTime.UtcNow} {ex.Message} {ex.InnerException} {ex.StackTrace}");
             }
         }
     }
