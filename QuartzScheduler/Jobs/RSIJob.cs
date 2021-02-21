@@ -31,10 +31,11 @@ namespace QuartzScheduler.Jobs
         }
         public async Task Execute(IJobExecutionContext context)
         {
-            try
+
+            string text = null;
+            foreach (var symbol in GlobalValues.symbols)
             {
-                string text = null;
-                foreach (var symbol in GlobalValues.symbols)
+                try
                 {
                     var signal = await _tradeCandlesService.GetRSISignal(symbol, interval, GlobalValues.inPositionSymbols.Contains(symbol));
                     if (signal != null)
@@ -45,16 +46,31 @@ namespace QuartzScheduler.Jobs
                         text += $"{symbol} {signal}";
                     }
                 }
-                if (text != null)
+                catch (Exception ex)
                 {
-                    string baseUrl = $"https://api.telegram.org/bot{bot1Token}/sendMessage?chat_id={chatId}&text={StaticCounter.counter}) {text}";
-                    StaticCounter.counter++;
-                    var client = new HttpClient();
-                    await client.GetAsync(baseUrl);
+                    StaticLogger.LogMessage($"{symbol} simpleRequest {ex.Message}");
                 }
 
-                string text2 = null;
-                foreach (var symbol in GlobalValues.inPositionSymbols)
+            }
+            if (text != null)
+            {
+                string baseUrl = $"https://api.telegram.org/bot{bot1Token}/sendMessage?chat_id={chatId}&text={StaticCounter.counter}) {text}";
+                StaticCounter.counter++;
+                var client = new HttpClient();
+                try
+                {
+                    await client.GetAsync(baseUrl);
+                }
+                catch (Exception ex)
+                {
+                    StaticLogger.LogMessage($"bot1 request {ex.Message}");
+                }
+            }
+
+            string text2 = null;
+            foreach (var symbol in GlobalValues.inPositionSymbols)
+            {
+                try
                 {
                     var signal = await _tradeCandlesService.GetInPositionRSISignal(symbol, interval);
                     if (signal != null)
@@ -65,18 +81,26 @@ namespace QuartzScheduler.Jobs
                         text2 += $"{symbol} {signal}";
                     }
                 }
-                if (text2 != null)
+                catch (Exception ex)
                 {
-                    string baseUrl = $"https://api.telegram.org/bot{bot2Token}/sendMessage?chat_id={chatId}&text={StaticCounter.counter2}) Пора продавать {text2}";
-                    StaticCounter.counter2++;
-                    var client = new HttpClient();
-                    await client.GetAsync(baseUrl);
+                    StaticLogger.LogMessage($"{symbol} inPositionRequest {ex.Message}");
                 }
             }
-            catch (Exception ex)
+            if (text2 != null)
             {
-                StaticLogger.LogMessage($"{DateTime.UtcNow} {ex.Message} {ex.InnerException} {ex.StackTrace}");
+                string baseUrl = $"https://api.telegram.org/bot{bot2Token}/sendMessage?chat_id={chatId}&text={StaticCounter.counter2}) Пора продавать {text2}";
+                StaticCounter.counter2++;
+                var client = new HttpClient();
+                try
+                {
+                    await client.GetAsync(baseUrl);
+                }
+                catch (Exception ex)
+                {
+                    StaticLogger.LogMessage($"bot2 request {ex.Message}");
+                }
             }
+
         }
     }
 }
