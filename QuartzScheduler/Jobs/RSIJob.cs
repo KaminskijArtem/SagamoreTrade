@@ -13,7 +13,7 @@ namespace QuartzScheduler.Jobs
 {
     public class RSIJob : IJob
     {
-        readonly string interval = "1h";
+        readonly string interval = "15m";
         private readonly IRSITradeCandlesService _tradeCandlesService;
         private string bot1Token;
         private string bot2Token;
