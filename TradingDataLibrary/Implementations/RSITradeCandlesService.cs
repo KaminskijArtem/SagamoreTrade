@@ -35,10 +35,12 @@ namespace TradingDataLibrary.Implementations
             // fill ohlcList
             adx.Load(ohlcList);
             var serie = adx.Calculate();
+            var adxVal = Math.Round(serie.ADX.Last().Value,2);
+            var diffVal = Math.Round((serie.DIPositive.Last()-serie.DINegative.Last()).Value,2);
 
             var rsi = Calculate(candles);
             if (rsi < 35 || rsi > 65 || isInposition)
-                return $"{decimal.Round(rsi, 2)}% ADX:{serie.ADX.Last()} p-n:{serie.DIPositive.Last()-serie.DINegative.Last()}";
+                return $"{decimal.Round(rsi, 2)}% ADX:{adxVal} diff:{diffVal}";
 
             return null;
         }
