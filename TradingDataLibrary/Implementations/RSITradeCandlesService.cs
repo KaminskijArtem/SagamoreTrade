@@ -62,7 +62,7 @@ namespace TradingDataLibrary.Implementations
                 if((double)candles[i].Close < serie.LowerBand[i].Value)
                     downCount++;
             }
-            return $"↑:{upCount}, ↓:{downCount}";
+            return $"{upCount}↑{downCount}↓";
         }
 
         public async Task<string> GetInPositionRSISignal(string symbol, string interval)
