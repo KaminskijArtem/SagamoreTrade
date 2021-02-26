@@ -22,7 +22,7 @@ namespace TradingDataLibrary.Implementations
         {
             var candles = await _candlesApiClient.GetCandles(symbol, interval);
 
-            var adx = new ADX(14);
+            var bb = new BollingerBand(20, 2);
             List<Ohlc> ohlcList = candles.Select(x => 
             new Ohlc() {
                 Date = x.OpenTime.UtcDateTime,
@@ -33,16 +33,36 @@ namespace TradingDataLibrary.Implementations
                 Volume = x.Volume
                 }).ToList();
             // fill ohlcList
-            adx.Load(ohlcList);
-            var serie = adx.Calculate();
-            var adxVal = Math.Round(serie.ADX.Last().Value,2);
-            var diffVal = Math.Round((serie.DIPositive.Last()-serie.DINegative.Last()).Value,2);
+            bb.Load(ohlcList);
+            var serie = bb.Calculate();
+            var outOfBBSignal100 = CalculateCountOutOfBB(candles, serie, 100);
+            var outOfBBSignal200 = CalculateCountOutOfBB(candles, serie, 200);
+            var outOfBBSignal300 = CalculateCountOutOfBB(candles, serie, 300);
+
+            var adx = new ADX(14);
+            adx.Load(ohlcList); 
+            var adxSerie = adx.Calculate(); 
+            var adxVal = Math.Round(adxSerie.ADX.Last().Value,2); 
 
             var rsi = Calculate(candles);
             if (rsi < 35 || rsi > 65 || isInposition)
-                return $"{decimal.Round(rsi, 2)}% ADX:{adxVal} diff:{diffVal}";
+                return $"{decimal.Round(rsi, 2)}% 100:{outOfBBSignal100}, 200:{outOfBBSignal200}, 300:{outOfBBSignal300} adx:{adxVal}";
 
             return null;
+        }
+
+        private string CalculateCountOutOfBB(List<Candle> candles, BollingerBandSerie serie, int count)
+        {
+            var upCount = 0;
+            var downCount = 0;
+            for (var i = candles.Count() - 1; i > candles.Count()-count; i--)
+            {
+                if((double)candles[i].Close > serie.UpperBand[i].Value)
+                    upCount++;
+                if((double)candles[i].Close < serie.LowerBand[i].Value)
+                    downCount++;
+            }
+            return $"↑:{upCount}, ↓:{downCount}";
         }
 
         public async Task<string> GetInPositionRSISignal(string symbol, string interval)
