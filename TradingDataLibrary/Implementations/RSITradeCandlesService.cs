@@ -46,7 +46,7 @@ namespace TradingDataLibrary.Implementations
 
             var rsi = Calculate(candles);
             if (rsi < 35 || rsi > 65 || isInposition)
-                return $"{decimal.Round(rsi, 2)}% 100:{outOfBBSignal100}, 200:{outOfBBSignal200}, 300:{outOfBBSignal300} adx:{adxVal}";
+                return $"{decimal.Round(rsi, 2)}% 100:{outOfBBSignal100} 200:{outOfBBSignal200} 300:{outOfBBSignal300} adx:{adxVal}";
 
             return null;
         }
