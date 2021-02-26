@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NetTrader.Indicator;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -20,9 +21,24 @@ namespace TradingDataLibrary.Implementations
         public async Task<string> GetRSISignal(string symbol, string interval, bool isInposition)
         {
             var candles = await _candlesApiClient.GetCandles(symbol, interval);
+
+            var adx = new ADX(14);
+            List<Ohlc> ohlcList = candles.Select(x => 
+            new Ohlc() {
+                Date = x.OpenTime.UtcDateTime,
+                Open = (double)x.Open,
+                Close = (double)x.Close,
+                High = (double)x.High,
+                Low = (double)x.Low,
+                Volume = x.Volume
+                }).ToList();
+            // fill ohlcList
+            adx.Load(ohlcList);
+            var serie = adx.Calculate();
+
             var rsi = Calculate(candles);
-            if(rsi < 30 || isInposition)
-                return $"{decimal.Round(rsi, 2)}%";
+            if (rsi < 35 || rsi > 65 || isInposition)
+                return $"{decimal.Round(rsi, 2)}% ADX:{serie.ADX.Last()} p-n:{serie.DIPositive.Last()-serie.DINegative.Last()}";
 
             return null;
         }
@@ -31,7 +47,7 @@ namespace TradingDataLibrary.Implementations
         {
             var candles = await _candlesApiClient.GetCandles(symbol, interval);
             var rsi = Calculate(candles);
-            if(rsi > 70)
+            if (rsi > 70)
                 return $"{decimal.Round(rsi, 2)}%";
 
             return null;
@@ -62,7 +78,7 @@ namespace TradingDataLibrary.Implementations
                 RS.Add(null);
                 RSI.Add(null);
             }
-            
+
             var averageGain = gainSum / N;
             var averageLoss = lossSum / N;
             var rs = averageGain / averageLoss;
@@ -92,6 +108,6 @@ namespace TradingDataLibrary.Implementations
             return RSI.Last().Value;
         }
 
-        
+
     }
 }
