@@ -13,7 +13,7 @@ namespace QuartzScheduler.Base
 
         public static List<string> inPositionSymbols = new List<string>
         {
-
+            "ETH/USD" , "ETH/EUR"
         };
     }
 }
