@@ -16,6 +16,8 @@ namespace QuartzScheduler.Base
         };
 
         public static List<string> inPositionSymbols = new List<string>
-        { };
+        {
+            "XRP/BTC"
+            };
     }
 }
