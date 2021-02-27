@@ -45,7 +45,7 @@ namespace TradingDataLibrary.Implementations
             var adxVal = Math.Round(adxSerie.ADX.Last().Value,2); 
 
             var rsi = Calculate(candles);
-            if (rsi < 35 || rsi > 65 || isInposition)
+            if (rsi < 33 || rsi > 67 || isInposition)
                 return $"{decimal.Round(rsi, 2)}% 100:{outOfBBSignal100} 200:{outOfBBSignal200} 300:{outOfBBSignal300} adx:{adxVal}";
 
             return null;
