@@ -44,9 +44,13 @@ namespace TradingDataLibrary.Implementations
             var adxSerie = adx.Calculate(); 
             var adxVal = Math.Round(adxSerie.ADX.Last().Value,2); 
 
-            var rsi = Calculate(candles);
+            var rsiList = Calculate(candles);
+            var rsi = decimal.Round(rsiList.Last().Value, 2);
+            var rsiPrev =  decimal.Round(rsiList.Take(rsiList.Count() - 1).Last().Value, 2);
+            var rsiPrevPrev =  decimal.Round(rsiList.Take(rsiList.Count() - 2).Last().Value, 2);
+
             if (rsi < 32 || rsi > 68 || isInposition)
-                return $"{decimal.Round(rsi, 2)}% 100:{outOfBBSignal100} 200:{outOfBBSignal200} 300:{outOfBBSignal300} adx:{adxVal}";
+                return $"{rsi}% ({rsiPrev}% {rsiPrevPrev}%) 100:{outOfBBSignal100} 200:{outOfBBSignal200} 300:{outOfBBSignal300} adx:{adxVal}";
 
             return null;
         }
@@ -68,14 +72,15 @@ namespace TradingDataLibrary.Implementations
         public async Task<string> GetInPositionRSISignal(string symbol, string interval)
         {
             var candles = await _candlesApiClient.GetCandles(symbol, interval);
-            var rsi = Calculate(candles);
+            var rsiList = Calculate(candles);
+            var rsi = rsiList.Last().Value;
             if (rsi > 45 && rsi < 55)
                 return $"{decimal.Round(rsi, 2)}%";
 
             return null;
         }
 
-        public decimal Calculate(List<Candle> candles)
+        public List<decimal?> Calculate(List<Candle> candles)
         {
             // Add null values for first item, iteration will start from second item of OhlcList
             var RS = new List<decimal?>();
@@ -127,7 +132,7 @@ namespace TradingDataLibrary.Implementations
                 RSI.Add(rsi);
             }
 
-            return RSI.Last().Value;
+            return RSI;
         }
 
 
