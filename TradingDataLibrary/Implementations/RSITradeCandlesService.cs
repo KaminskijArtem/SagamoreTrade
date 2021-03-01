@@ -27,7 +27,7 @@ namespace TradingDataLibrary.Implementations
             new Ohlc()
             {
                 Date = x.OpenTime.UtcDateTime,
-                Open = (double)x.Open,
+                Open = (double)x.Open, 
                 Close = (double)x.Close,
                 High = (double)x.High,
                 Low = (double)x.Low,
