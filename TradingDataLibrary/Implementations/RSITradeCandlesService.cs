@@ -50,7 +50,8 @@ namespace TradingDataLibrary.Implementations
             var rsiPrev = decimal.Round(rsiList.Take(rsiList.Count() - 1).Last().Value, 2);
             var rsiPrevPrev = decimal.Round(rsiList.Take(rsiList.Count() - 2).Last().Value, 2);
 
-            if ((rsi < 32 && rsi > rsiPrev && rsiPrev > rsiPrevPrev) || (rsi > 68 && rsi < rsiPrev && rsiPrev < rsiPrevPrev) || isInposition)
+            //if ((rsi < 32 && rsi > rsiPrev && rsiPrev > rsiPrevPrev) || (rsi > 68 && rsi < rsiPrev && rsiPrev < rsiPrevPrev) || isInposition)
+            if(rsi < 32 || rsi > 68 || isInposition)
                 return $"{rsi}% ({rsiPrev}% {rsiPrevPrev}%) 100:{outOfBBSignal100} 200:{outOfBBSignal200} 300:{outOfBBSignal300} adx:{adxVal}";
 
             return null;
