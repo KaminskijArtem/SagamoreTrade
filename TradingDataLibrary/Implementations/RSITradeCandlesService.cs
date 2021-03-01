@@ -69,7 +69,7 @@ namespace TradingDataLibrary.Implementations
         {
             var candles = await _candlesApiClient.GetCandles(symbol, interval);
             var rsi = Calculate(candles);
-            if (rsi > 70)
+            if (rsi > 45 && rsi < 55)
                 return $"{decimal.Round(rsi, 2)}%";
 
             return null;
