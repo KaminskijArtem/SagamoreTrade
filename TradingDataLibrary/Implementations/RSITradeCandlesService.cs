@@ -23,15 +23,16 @@ namespace TradingDataLibrary.Implementations
             var candles = await _candlesApiClient.GetCandles(symbol, interval);
 
             var bb = new BollingerBand(20, 2);
-            List<Ohlc> ohlcList = candles.Select(x => 
-            new Ohlc() {
+            List<Ohlc> ohlcList = candles.Select(x =>
+            new Ohlc()
+            {
                 Date = x.OpenTime.UtcDateTime,
                 Open = (double)x.Open,
                 Close = (double)x.Close,
                 High = (double)x.High,
                 Low = (double)x.Low,
                 Volume = x.Volume
-                }).ToList();
+            }).ToList();
             // fill ohlcList
             bb.Load(ohlcList);
             var serie = bb.Calculate();
@@ -40,16 +41,16 @@ namespace TradingDataLibrary.Implementations
             var outOfBBSignal300 = CalculateCountOutOfBB(candles, serie, 300);
 
             var adx = new ADX(14);
-            adx.Load(ohlcList); 
-            var adxSerie = adx.Calculate(); 
-            var adxVal = Math.Round(adxSerie.ADX.Last().Value,2); 
+            adx.Load(ohlcList);
+            var adxSerie = adx.Calculate();
+            var adxVal = Math.Round(adxSerie.ADX.Last().Value, 2);
 
             var rsiList = Calculate(candles);
             var rsi = decimal.Round(rsiList.Last().Value, 2);
-            var rsiPrev =  decimal.Round(rsiList.Take(rsiList.Count() - 1).Last().Value, 2);
-            var rsiPrevPrev =  decimal.Round(rsiList.Take(rsiList.Count() - 2).Last().Value, 2);
+            var rsiPrev = decimal.Round(rsiList.Take(rsiList.Count() - 1).Last().Value, 2);
+            var rsiPrevPrev = decimal.Round(rsiList.Take(rsiList.Count() - 2).Last().Value, 2);
 
-            if (rsi < 32 || rsi > 68 || isInposition)
+            if ((rsi < 32 && rsi > rsiPrev && rsiPrev > rsiPrevPrev) || (rsi > 68 && rsi < rsiPrev && rsiPrev < rsiPrevPrev) || isInposition)
                 return $"{rsi}% ({rsiPrev}% {rsiPrevPrev}%) 100:{outOfBBSignal100} 200:{outOfBBSignal200} 300:{outOfBBSignal300} adx:{adxVal}";
 
             return null;
@@ -59,11 +60,11 @@ namespace TradingDataLibrary.Implementations
         {
             var upCount = 0;
             var downCount = 0;
-            for (var i = candles.Count() - 1; i > candles.Count()-count; i--)
+            for (var i = candles.Count() - 1; i > candles.Count() - count; i--)
             {
-                if((double)candles[i].Close > serie.UpperBand[i].Value)
+                if ((double)candles[i].Close > serie.UpperBand[i].Value)
                     upCount++;
-                if((double)candles[i].Close < serie.LowerBand[i].Value)
+                if ((double)candles[i].Close < serie.LowerBand[i].Value)
                     downCount++;
             }
             return $"{upCount}↑{downCount}↓";
