@@ -43,10 +43,28 @@ namespace TradingDataLibrary.Implementations
             var rsiPrev = decimal.Round(rsiList.Take(rsiList.Count() - 1).Last().Value, 2);
             var rsiPrevPrev = decimal.Round(rsiList.Take(rsiList.Count() - 2).Last().Value, 2);
 
+            var topEmaDiffs = GetTopEmaDiffs(emaSerie, candles);
+
             if (rsi < 32 || rsi > 68 || isInposition)
-                return $"{rsi}% ({rsiPrev}% {rsiPrevPrev}%) emaDiff:{emaDiff}%";
+                return $"{rsi}% ({rsiPrev}% {rsiPrevPrev}%) emaDiff:{emaDiff}% ({topEmaDiffs})";
 
             return null;
+        }
+
+        private string GetTopEmaDiffs(SingleDoubleSerie emaSerie, List<Candle> candles)
+        {
+            var emaDiffs = new List<decimal>();
+            for(var i = candles.Count()-1; emaSerie.Values[i].HasValue; i--)
+            {
+                emaDiffs.Add(Math.Round(Math.Abs((decimal)emaSerie.Values[i].Value - candles[i].Close) * 100 / candles[i].Close, 1));
+            }
+            emaDiffs.Sort();
+            emaDiffs.Reverse();
+            var top1 = emaDiffs.First();
+            var top51 = emaDiffs.Skip(50).First();
+            var top101 = emaDiffs.Skip(100).First();
+
+            return $"{top1}|{top51}|{top101}";
         }
 
         public async Task<string> GetInPositionRSISignal(string symbol, string interval)
