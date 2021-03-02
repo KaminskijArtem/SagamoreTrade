@@ -36,7 +36,7 @@ namespace TradingDataLibrary.Implementations
             ema.Load(ohlcList);
             var emaSerie = ema.Calculate();
             var emaVal = emaSerie.Values.Last().Value;
-            var emaDiff = Math.Round(Math.Abs(emaVal - (double)candles.Last().Close) / (double)candles.Last().Close, 2);
+            var emaDiff = Math.Round(Math.Abs(emaVal - (double)candles.Last().Close) / (double)candles.Last().Close, 4)*100;
 
             var rsiList = Calculate(candles);
             var rsi = decimal.Round(rsiList.Last().Value, 2);
@@ -44,7 +44,7 @@ namespace TradingDataLibrary.Implementations
             var rsiPrevPrev = decimal.Round(rsiList.Take(rsiList.Count() - 2).Last().Value, 2);
 
             if(rsi < 32 || rsi > 68 || isInposition)
-                return $"{rsi}% ({rsiPrev}% {rsiPrevPrev}%) emaDiff:{emaDiff}";
+                return $"{rsi}% ({rsiPrev}% {rsiPrevPrev}%) emaDiff:{emaDiff}%";
 
             return null;
         }
