@@ -21,9 +21,7 @@ namespace TradingDataLibrary.Implementations
         public async Task<string> GetRSISignal(string symbol, string interval, bool isInposition)
         {
             var candles = await _candlesApiClient.GetCandles(symbol, interval);
-
-            var bb = new BollingerBand(20, 2);
-            List<Ohlc> ohlcList = candles.Select(x =>
+            var ohlcList = candles.Select(x =>
             new Ohlc()
             {
                 Date = x.OpenTime.UtcDateTime,
@@ -33,42 +31,22 @@ namespace TradingDataLibrary.Implementations
                 Low = (double)x.Low,
                 Volume = x.Volume
             }).ToList();
-            // fill ohlcList
-            bb.Load(ohlcList);
-            var serie = bb.Calculate();
-            var outOfBBSignal100 = CalculateCountOutOfBB(candles, serie, 100);
-            var outOfBBSignal200 = CalculateCountOutOfBB(candles, serie, 200);
-            var outOfBBSignal300 = CalculateCountOutOfBB(candles, serie, 300);
 
-            var adx = new ADX(14);
-            adx.Load(ohlcList);
-            var adxSerie = adx.Calculate();
-            var adxVal = Math.Round(adxSerie.ADX.Last().Value, 2);
+            var ema = new EMA(200, false);
+            ema.Load(ohlcList);
+            var emaSerie = ema.Calculate();
+            var emaVal = emaSerie.Values.Last().Value;
+            var emaDiff = Math.Round(Math.Abs(emaVal - (double)candles.Last().Close) / (double)candles.Last().Close, 2);
 
             var rsiList = Calculate(candles);
             var rsi = decimal.Round(rsiList.Last().Value, 2);
             var rsiPrev = decimal.Round(rsiList.Take(rsiList.Count() - 1).Last().Value, 2);
             var rsiPrevPrev = decimal.Round(rsiList.Take(rsiList.Count() - 2).Last().Value, 2);
 
-            //if ((rsi < 32 && rsi > rsiPrev && rsiPrev > rsiPrevPrev) || (rsi > 68 && rsi < rsiPrev && rsiPrev < rsiPrevPrev) || isInposition)
             if(rsi < 32 || rsi > 68 || isInposition)
-                return $"{rsi}% ({rsiPrev}% {rsiPrevPrev}%) 100:{outOfBBSignal100} 200:{outOfBBSignal200} 300:{outOfBBSignal300} adx:{adxVal}";
+                return $"{rsi}% ({rsiPrev}% {rsiPrevPrev}%) emaDiff:{emaDiff}";
 
             return null;
-        }
-
-        private string CalculateCountOutOfBB(List<Candle> candles, BollingerBandSerie serie, int count)
-        {
-            var upCount = 0;
-            var downCount = 0;
-            for (var i = candles.Count() - 1; i > candles.Count() - count; i--)
-            {
-                if ((double)candles[i].Close > serie.UpperBand[i].Value)
-                    upCount++;
-                if ((double)candles[i].Close < serie.LowerBand[i].Value)
-                    downCount++;
-            }
-            return $"{upCount}↑{downCount}↓";
         }
 
         public async Task<string> GetInPositionRSISignal(string symbol, string interval)
@@ -136,7 +114,5 @@ namespace TradingDataLibrary.Implementations
 
             return RSI;
         }
-
-
     }
 }
