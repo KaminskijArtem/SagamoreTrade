@@ -86,7 +86,7 @@ namespace TradingDataLibrary.Implementations
             var emaDiff = Math.Abs(emaVal - (double)candles.Last().Close) * 100 / (double)candles.Last().Close;
 
             if (emaDiff < 0.25)
-                return $"EMA рядом, пора закрываться";
+                return $"EMA рядом";
 
             return null;
         }
