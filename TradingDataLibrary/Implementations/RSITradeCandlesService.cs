@@ -21,20 +21,8 @@ namespace TradingDataLibrary.Implementations
         public async Task<string> GetRSISignal(string symbol, string interval, bool isInposition)
         {
             var candles = await _candlesApiClient.GetCandles(symbol, interval);
-            var ohlcList = candles.Select(x =>
-            new Ohlc()
-            {
-                Date = x.OpenTime.UtcDateTime,
-                Open = (double)x.Open,
-                Close = (double)x.Close,
-                High = (double)x.High,
-                Low = (double)x.Low,
-                Volume = x.Volume
-            }).ToList();
 
-            var ema = new EMA(200, false);
-            ema.Load(ohlcList);
-            var emaSerie = ema.Calculate();
+            var emaSerie = GetEmaSerie(candles);
             var emaVal = emaSerie.Values.Last().Value;
             var emaDiff = Math.Round(Math.Abs(emaVal - (double)candles.Last().Close) * 100 / (double)candles.Last().Close, 2);
 
@@ -51,29 +39,54 @@ namespace TradingDataLibrary.Implementations
             return null;
         }
 
+        private SingleDoubleSerie GetEmaSerie(List<Candle> candles)
+        {
+            var ohlcList = candles.Select(x =>
+            new Ohlc()
+            {
+                Date = x.OpenTime.UtcDateTime,
+                Open = (double)x.Open,
+                Close = (double)x.Close,
+                High = (double)x.High,
+                Low = (double)x.Low,
+                Volume = x.Volume
+            }).ToList();
+
+            var ema = new EMA(200, false);
+            ema.Load(ohlcList);
+            return ema.Calculate();
+        }
+
         private string GetTopEmaDiffs(SingleDoubleSerie emaSerie, List<Candle> candles)
         {
             var emaDiffs = new List<decimal>();
-            for(var i = candles.Count()-1; emaSerie.Values[i].HasValue; i--)
+            for (var i = candles.Count() - 1; emaSerie.Values[i].HasValue; i--)
             {
                 emaDiffs.Add(Math.Round(Math.Abs((decimal)emaSerie.Values[i].Value - candles[i].Close) * 100 / candles[i].Close, 1));
             }
             emaDiffs.Sort();
             emaDiffs.Reverse();
             var top1 = emaDiffs.First();
-            var top51 = emaDiffs.Skip(50).First();
-            var top101 = emaDiffs.Skip(100).First();
+            var top76 = emaDiffs.Skip(75).First();
+            var top151 = emaDiffs.Skip(150).First();
 
-            return $"{top1}|{top51}|{top101}";
+            return $"{top1}|{top76}|{top151}";
         }
 
-        public async Task<string> GetInPositionRSISignal(string symbol, string interval)
+        public async Task<string> GetInPositionRSISignal(string symbol, string interval, bool isLong)
         {
             var candles = await _candlesApiClient.GetCandles(symbol, interval);
             var rsiList = Calculate(candles);
             var rsi = rsiList.Last().Value;
-            if (rsi > 45 && rsi < 55)
+            if ((rsi < 40 && !isLong) || (rsi > 60 && isLong))
                 return $"{decimal.Round(rsi, 2)}%";
+
+            var emaSerie = GetEmaSerie(candles);
+            var emaVal = emaSerie.Values.Last().Value;
+            var emaDiff = Math.Abs(emaVal - (double)candles.Last().Close) * 100 / (double)candles.Last().Close;
+
+            if (emaDiff < 0.25)
+                return $"EMA рядом, пора закрываться";
 
             return null;
         }

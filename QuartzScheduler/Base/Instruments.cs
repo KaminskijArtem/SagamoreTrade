@@ -13,7 +13,12 @@ namespace QuartzScheduler.Base
             "Gold", "Silver", "Copper"
         };
 
-        public static List<string> inPositionSymbols = new List<string>
+        public static List<string> inLongPositionSymbols = new List<string>
+        {
+            
+        };
+
+        public static List<string> inShortPositionSymbols = new List<string>
         {
             
         };

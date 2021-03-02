@@ -37,7 +37,10 @@ namespace QuartzScheduler.Jobs
             {
                 try
                 {
-                    var signal = await _tradeCandlesService.GetRSISignal(symbol, interval, GlobalValues.inPositionSymbols.Contains(symbol));
+                    var inPositionSymbols = new List<string>(GlobalValues.inLongPositionSymbols);
+                    inPositionSymbols.AddRange(GlobalValues.inShortPositionSymbols);
+
+                    var signal = await _tradeCandlesService.GetRSISignal(symbol, interval, inPositionSymbols.Contains(symbol));
                     if (signal != null)
                     {
                         if (text != null)
@@ -64,6 +67,48 @@ namespace QuartzScheduler.Jobs
                 catch (Exception ex)
                 {
                     StaticLogger.LogMessage($"bot request {ex.Message}");
+                }
+            }
+
+            SendInPositionSignal(GlobalValues.inLongPositionSymbols, true);
+            SendInPositionSignal(GlobalValues.inShortPositionSymbols, false);
+
+
+        }
+
+        private async void SendInPositionSignal(List<string> inPositionSymbols, bool isLong)
+        {
+            string text = null;
+            foreach (var symbol in inPositionSymbols)
+            {
+                try
+                {
+                    var signal = await _tradeCandlesService.GetInPositionRSISignal(symbol, interval, isLong);
+                    if (signal != null)
+                    {
+                        if (text != null)
+                            text += "\n";
+
+                        text += $"{symbol} {signal}";
+                    }
+                }
+                catch (Exception ex)
+                {
+                    StaticLogger.LogMessage($"{symbol} inPositionRequest {ex.Message}");
+                }
+            }
+            if (text != null)
+            {
+                string baseUrl = $"https://api.telegram.org/bot{bot2Token}/sendMessage?chat_id={chatId}&text={StaticCounter.counter2}) Пора закрывать {text}";
+                StaticCounter.counter2++;
+                var client = new HttpClient();
+                try
+                {
+                    await client.GetAsync(baseUrl);
+                }
+                catch (Exception ex)
+                {
+                    StaticLogger.LogMessage($"bot2 request {ex.Message}");
                 }
             }
         }
