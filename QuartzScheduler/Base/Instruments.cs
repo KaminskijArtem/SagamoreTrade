@@ -20,7 +20,7 @@ namespace QuartzScheduler.Base
 
         public static List<string> inShortPositionSymbols = new List<string>
         {
-            
+            "LTC/USD","LTC/EUR"
         };
     }
 }
