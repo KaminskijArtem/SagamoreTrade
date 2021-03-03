@@ -15,12 +15,12 @@ namespace QuartzScheduler.Base
 
         public static List<string> inLongPositionSymbols = new List<string>
         {
-             "ETH/BTC"
+             
         };
 
         public static List<string> inShortPositionSymbols = new List<string>
         {
-            "Copper"
+            
         };
     }
 }
