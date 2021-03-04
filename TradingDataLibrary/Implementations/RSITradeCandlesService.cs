@@ -76,17 +76,19 @@ namespace TradingDataLibrary.Implementations
         public async Task<string> GetInPositionRSISignal(string symbol, string interval, bool isLong)
         {
             var candles = await _candlesApiClient.GetCandles(symbol, interval);
+
             var rsiList = Calculate(candles);
             var rsi = rsiList.Last().Value;
+            var rsiPrev = decimal.Round(rsiList.Take(rsiList.Count() - 1).Last().Value, 2);
+            var rsiPrevPrev = decimal.Round(rsiList.Take(rsiList.Count() - 2).Last().Value, 2);
+            var text = "";
+            if ((isLong && (rsi < rsiPrev)) || (!isLong && rsi > rsiPrev))
+                text = "!";
+
             if ((rsi < 50 && !isLong) || (rsi > 50 && isLong))
-                return $"{decimal.Round(rsi, 2)}%";
+                return text += $"{decimal.Round(rsi, 2)}%";
 
-            var emaSerie = GetEmaSerie(candles);
-            var emaVal = emaSerie.Values.Last().Value;
-            var emaDiff = Math.Abs(emaVal - (double)candles.Last().Close) * 100 / (double)candles.Last().Close;
 
-            if (emaDiff < 0.25)
-                return $"EMA рядом";
 
             return null;
         }
