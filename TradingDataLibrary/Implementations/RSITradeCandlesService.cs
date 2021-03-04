@@ -79,6 +79,11 @@ namespace TradingDataLibrary.Implementations
 
             var rsiList = Calculate(candles);
             var rsi = rsiList.Last().Value;
+            //var rsiPrev = StaticRsiStorage.Storage[symbol];
+            //var text = "";
+            //if ((isLong && (rsi < rsiPrev)) || (!isLong && rsi > rsiPrev))
+            //    text = "!";
+            //StaticRsiStorage.Storage[symbol] = rsi;
 
             if ((rsi < 50 && !isLong) || (rsi > 50 && isLong))
                 return $"{decimal.Round(rsi, 2)}%";
