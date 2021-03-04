@@ -79,14 +79,9 @@ namespace TradingDataLibrary.Implementations
 
             var rsiList = Calculate(candles);
             var rsi = rsiList.Last().Value;
-            var rsiPrev = decimal.Round(rsiList.Take(rsiList.Count() - 1).Last().Value, 2);
-            var rsiPrevPrev = decimal.Round(rsiList.Take(rsiList.Count() - 2).Last().Value, 2);
-            var text = "";
-            if ((isLong && (rsi < rsiPrev)) || (!isLong && rsi > rsiPrev))
-                text = "!";
 
             if ((rsi < 50 && !isLong) || (rsi > 50 && isLong))
-                return text += $"{decimal.Round(rsi, 2)}%";
+                return $"{decimal.Round(rsi, 2)}%";
 
 
 
