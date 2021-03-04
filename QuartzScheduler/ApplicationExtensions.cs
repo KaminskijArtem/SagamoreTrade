@@ -21,7 +21,7 @@ namespace QuartzScheduler
             services.AddSingleton<RSIJob>();
             services.AddSingleton(new JobSchedule(
                 jobType: typeof(RSIJob),
-                cronExpression: "15 0,5,10,15,20,25,30,35,40,45,50,55 * * * ?")); // run every 5 minutes
+                cronExpression: "30 4,9,14,19,24,29,34,39,44,49,54,59 * * * ?")); // run every 5 minutes
                 //cronExpression: "0,30 * * * * ?")); // run every minute at 0,30s
 
             services.AddHostedService<QuartzHostedService>();
