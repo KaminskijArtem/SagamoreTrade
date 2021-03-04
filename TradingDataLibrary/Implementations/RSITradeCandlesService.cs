@@ -78,7 +78,7 @@ namespace TradingDataLibrary.Implementations
             var candles = await _candlesApiClient.GetCandles(symbol, interval);
             var rsiList = Calculate(candles);
             var rsi = rsiList.Last().Value;
-            if ((rsi < 40 && !isLong) || (rsi > 60 && isLong))
+            if ((rsi < 50 && !isLong) || (rsi > 50 && isLong))
                 return $"{decimal.Round(rsi, 2)}%";
 
             var emaSerie = GetEmaSerie(candles);
