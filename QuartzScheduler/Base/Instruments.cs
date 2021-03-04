@@ -15,7 +15,7 @@ namespace QuartzScheduler.Base
 
         public static List<string> inLongPositionSymbols = new List<string>
         {
-             "Gold", "Silver", "US100"
+            
         };
 
         public static List<string> inShortPositionSymbols = new List<string>
