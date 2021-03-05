@@ -76,17 +76,21 @@ namespace TradingDataLibrary.Implementations
         public async Task<string> GetInPositionRSISignal(string symbol, string interval, bool isLong)
         {
             var candles = await _candlesApiClient.GetCandles(symbol, interval);
-
             var rsiList = Calculate(candles);
             var rsi = rsiList.Last().Value;
-            //var rsiPrev = StaticRsiStorage.Storage[symbol];
-            //var text = "";
-            //if ((isLong && (rsi < rsiPrev)) || (!isLong && rsi > rsiPrev))
-            //    text = "!";
-            //StaticRsiStorage.Storage[symbol] = rsi;
+            var text = "";
+
+            StaticRsiStorage.Storage.TryGetValue(symbol, out decimal rsiPrev);
+
+            if (rsiPrev != 0)
+            {
+                if ((isLong && (rsi < rsiPrev)) || (!isLong && rsi > rsiPrev))
+                    text = " !";
+            }
+            StaticRsiStorage.Storage[symbol] = rsi;
 
             if ((rsi < 50 && !isLong) || (rsi > 50 && isLong))
-                return $"{decimal.Round(rsi, 2)}%";
+                return $"{decimal.Round(rsi, 2)}% {text}";
 
 
 
