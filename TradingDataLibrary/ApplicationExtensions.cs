@@ -14,6 +14,7 @@ namespace TradingDataLibrary
         {
             services.AddTransient<IRSITradeCandlesService, RSITradeCandlesService>();
             services.AddTransient<ICandlesApiClient, CandlesApiClient>();
+            services.AddTransient<IPositionsApiClient, PositionsApiClient>();
         }
     }
 }

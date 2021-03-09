@@ -11,15 +11,5 @@ namespace QuartzScheduler.Base
             "US500", "US30", "US100",
             "Gold", "Silver", "Platinum"
         };
-
-        public static List<string> inLongPositionSymbols = new List<string>
-        {
-            "ETH/BTC", "BCH/USD"
-        };
-
-        public static List<string> inShortPositionSymbols = new List<string>
-        {
-            "LTC/USD"
-        };
     }
 }

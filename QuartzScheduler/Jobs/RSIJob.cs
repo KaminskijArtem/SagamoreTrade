@@ -8,39 +8,48 @@ using System.Net.Http;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Configuration;
 using QuartzScheduler.Logging;
+using TradingDataLibrary.ApiClient;
+using System.Linq;
 
 namespace QuartzScheduler.Jobs
 {
     public class RSIJob : IJob
     {
-        readonly string interval = "30m";
         private readonly IRSITradeCandlesService _tradeCandlesService;
+        private readonly IConfiguration _configuration;
+        private readonly IPositionsApiClient _positionsApiClient;
+
+        readonly string interval = "30m";
         private string bot1Token;
         private string bot2Token;
         private string chatId;
 
-        private readonly IConfiguration Configuration;
-
-        public RSIJob(IRSITradeCandlesService tradeCandlesService, IConfiguration configuration)
+        public RSIJob(IRSITradeCandlesService tradeCandlesService,
+            IConfiguration configuration,
+            IPositionsApiClient positionsApiClient)
         {
             _tradeCandlesService = tradeCandlesService;
-            Configuration = configuration;
-            bot1Token = Configuration["TelegramConfiguration:Bot1Token"];
-            bot2Token = Configuration["TelegramConfiguration:Bot2Token"];
-            chatId = Configuration["TelegramConfiguration:ChatId"];
+            _configuration = configuration;
+            _positionsApiClient = positionsApiClient;
+
+            bot1Token = _configuration["TelegramConfiguration:Bot1Token"];
+            bot2Token = _configuration["TelegramConfiguration:Bot2Token"];
+            chatId = _configuration["TelegramConfiguration:ChatId"];
         }
         public async Task Execute(IJobExecutionContext context)
         {
+            var positions = await _positionsApiClient.GetAllPositions();
+
+            var allPositions = positions.Select(x => x.symbol).ToList();
+            var longPositions = positions.Where(x => x.IsLong()).Select(x => x.symbol).ToList();
+            var shortPositions = positions.Where(x => !x.IsLong()).Select(x => x.symbol).ToList();
 
             string text = null;
             foreach (var symbol in GlobalValues.symbols)
             {
                 try
                 {
-                    var inPositionSymbols = new List<string>(GlobalValues.inLongPositionSymbols);
-                    inPositionSymbols.AddRange(GlobalValues.inShortPositionSymbols);
-
-                    var signal = await _tradeCandlesService.GetRSISignal(symbol, interval, inPositionSymbols.Contains(symbol));
+                    var signal = await _tradeCandlesService.GetRSISignal(symbol, interval, allPositions.Contains(symbol));
                     if (signal != null)
                     {
                         if (text != null)
@@ -70,8 +79,8 @@ namespace QuartzScheduler.Jobs
                 }
             }
 
-            SendInPositionSignal(GlobalValues.inLongPositionSymbols, true);
-            SendInPositionSignal(GlobalValues.inShortPositionSymbols, false);
+            SendInPositionSignal(longPositions, true);
+            SendInPositionSignal(shortPositions, false);
 
 
         }
