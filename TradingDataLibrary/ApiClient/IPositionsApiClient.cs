@@ -9,5 +9,6 @@ namespace TradingDataLibrary.ApiClient
     public interface IPositionsApiClient
     {
         Task<List<Position>> GetAllPositions();
+        Task<bool> ClosePosition(Guid id);
     }
 }

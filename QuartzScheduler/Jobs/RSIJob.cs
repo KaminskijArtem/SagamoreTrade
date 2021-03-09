@@ -10,6 +10,7 @@ using Microsoft.Extensions.Configuration;
 using QuartzScheduler.Logging;
 using TradingDataLibrary.ApiClient;
 using System.Linq;
+using TradingDataLibrary.Models;
 
 namespace QuartzScheduler.Jobs
 {
@@ -41,8 +42,8 @@ namespace QuartzScheduler.Jobs
             var positions = await _positionsApiClient.GetAllPositions();
 
             var allPositions = positions.Select(x => x.symbol).ToList();
-            var longPositions = positions.Where(x => x.IsLong()).Select(x => x.symbol).ToList();
-            var shortPositions = positions.Where(x => !x.IsLong()).Select(x => x.symbol).ToList();
+            var longPositions = positions.Where(x => x.IsLong()).ToList();
+            var shortPositions = positions.Where(x => !x.IsLong()).ToList();
 
             string text = null;
             foreach (var symbol in GlobalValues.symbols)
@@ -85,30 +86,37 @@ namespace QuartzScheduler.Jobs
 
         }
 
-        private async void SendInPositionSignal(List<string> inPositionSymbols, bool isLong)
+        private async void SendInPositionSignal(List<Position> positions, bool isLong)
         {
             string text = null;
-            foreach (var symbol in inPositionSymbols)
+            foreach (var position in positions)
             {
                 try
                 {
-                    var signal = await _tradeCandlesService.GetInPositionRSISignal(symbol, interval, isLong);
+                    var signal = await _tradeCandlesService.GetInPositionRSISignal(position.symbol, interval, isLong);
                     if (signal != null)
                     {
                         if (text != null)
                             text += "\n";
 
-                        text += $"{symbol} {signal}";
+                        text += $"{position.symbol} {signal.Text}";
+
+                        if(signal.ShouldClosePosition)
+                        { 
+                            var result = await _positionsApiClient.ClosePosition(position.id);
+                            if(result)
+                                 text += " закрыта";
+                        }
                     }
                 }
                 catch (Exception ex)
                 {
-                    StaticLogger.LogMessage($"{symbol} inPositionRequest {ex.Message}");
+                    StaticLogger.LogMessage($"{position} inPositionRequest {ex.Message}");
                 }
             }
             if (text != null)
             {
-                string baseUrl = $"https://api.telegram.org/bot{bot2Token}/sendMessage?chat_id={chatId}&text={StaticCounter.counter2}) Пора закрывать {text}";
+                string baseUrl = $"https://api.telegram.org/bot{bot2Token}/sendMessage?chat_id={chatId}&text={StaticCounter.counter2}) {text}";
                 StaticCounter.counter2++;
                 var client = new HttpClient();
                 try

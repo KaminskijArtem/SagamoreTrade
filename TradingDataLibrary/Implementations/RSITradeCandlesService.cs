@@ -73,26 +73,27 @@ namespace TradingDataLibrary.Implementations
             return $"{top1}|{top76}|{top151}";
         }
 
-        public async Task<string> GetInPositionRSISignal(string symbol, string interval, bool isLong)
+        public async Task<InPositionRSISignalModel> GetInPositionRSISignal(string symbol, string interval, bool isLong)
         {
             var candles = await _candlesApiClient.GetCandles(symbol, interval);
             var rsiList = Calculate(candles);
             var rsi = rsiList.Last().Value;
-            var text = "";
+            var outputModel = new InPositionRSISignalModel { Text = "", ShouldClosePosition = false };
 
             StaticRsiStorage.Storage.TryGetValue(symbol, out decimal rsiPrev);
 
             if (rsiPrev != 0)
             {
                 if ((isLong && (rsi < rsiPrev)) || (!isLong && rsi > rsiPrev))
-                    text = " !";
+                    outputModel.ShouldClosePosition = true;
             }
             StaticRsiStorage.Storage[symbol] = rsi;
 
             if ((rsi < 50 && !isLong) || (rsi > 50 && isLong))
-                return $"{decimal.Round(rsi, 2)}% {text}";
-
-
+            { 
+                outputModel.Text = $"{decimal.Round(rsi, 2)}%";
+                return outputModel;
+            }
 
             return null;
         }

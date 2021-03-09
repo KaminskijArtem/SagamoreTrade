@@ -55,5 +55,23 @@ namespace TradingDataLibrary.ApiClient
 
             return BitConverter.ToString(bytes).Replace("-", "").ToLower();
         }
+
+        public async Task<bool> ClosePosition(Guid id)
+        {
+            var client = new HttpClient();
+            var time = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+
+            var sign = CreateSignature($"timestamp={time}&positionId={id}", secretKey);
+            var request = new HttpRequestMessage()
+            {
+                RequestUri = 
+                new Uri($"https://api-adapter.backend.currency.com/api/v1/closeTradingPosition?timestamp={time}&positionId={id}&signature={sign}"),
+                Method = HttpMethod.Post,
+            };
+            request.Headers.Add("X-MBX-APIKEY", key);
+
+            var response = await client.SendAsync(request);
+            return response.IsSuccessStatusCode;
+        }
     }
 }
