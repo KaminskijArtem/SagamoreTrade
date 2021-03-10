@@ -33,8 +33,14 @@ namespace TradingDataLibrary.Implementations
 
             var topEmaDiffs = GetTopEmaDiffs(emaSerie, candles);
 
+            var text = "";
+            if (!isInposition
+                && ((rsiPrevPrev > 70 && rsiPrev < rsiPrevPrev && rsi < rsiPrev && rsi < 70 && rsi > 65)
+                || (rsiPrevPrev < 30 && rsiPrev > rsiPrevPrev && rsi > rsiPrev && rsi > 30 && rsi < 35)))
+                text += "пора открывать ";
+
             if (rsi < 32 || rsi > 68 || isInposition)
-                return $"{rsi}% ({rsiPrev}% {rsiPrevPrev}%) emaDiff:{emaDiff}% ({topEmaDiffs})";
+                return text += $"{rsi}% ({rsiPrev}% {rsiPrevPrev}%) emaDiff:{emaDiff}% ({topEmaDiffs})";
 
             return null;
         }
@@ -90,7 +96,7 @@ namespace TradingDataLibrary.Implementations
             StaticRsiStorage.Storage[symbol] = rsi;
 
             if ((rsi < 50 && !isLong) || (rsi > 50 && isLong))
-            { 
+            {
                 outputModel.Text = $"{decimal.Round(rsi, 2)}%";
                 return outputModel;
             }
