@@ -39,7 +39,7 @@ namespace TradingDataLibrary.Implementations
                 || (rsiPrevPrev < 30 && rsiPrev > rsiPrevPrev && rsi > rsiPrev && rsi > 30 && rsi < 35)))
                 text += "пора открывать ";
 
-            if (rsi < 32 || rsi > 68 || isInposition)
+            if (rsi < 32 || rsi > 68 || isInposition || !string.IsNullOrEmpty(text))
                 return text += $"{rsi}% ({rsiPrev}% {rsiPrevPrev}%) emaDiff:{emaDiff}% ({topEmaDiffs})";
 
             return null;
