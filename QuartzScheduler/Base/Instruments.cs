@@ -10,7 +10,7 @@ namespace QuartzScheduler.Base
         {   "BTC/USD", "BTC/EUR", "ETH/USD", "ETH/EUR", "LTC/USD", "BCH/USD", "ETH/BTC",
             "US500", "US30", "US100",
             "Gold", "Silver",
-            "Oil Brent"
+            "USD/JPY", "USD/CAD", "USD/CHF", "EUR/USD", "EUR/JPY", "EUR/GBP", "GBP/USD", "GBP/AUD", "GBP/JPY"
         };
     }
 }
