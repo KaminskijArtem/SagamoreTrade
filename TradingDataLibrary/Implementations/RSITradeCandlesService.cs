@@ -35,8 +35,8 @@ namespace TradingDataLibrary.Implementations
 
             var text = "";
             if (!isInposition
-                && ((rsiPrevPrev > 70 && rsiPrev < rsiPrevPrev && rsi < rsiPrev && rsi < 70 && rsi > 65)
-                || (rsiPrevPrev < 30 && rsiPrev > rsiPrevPrev && rsi > rsiPrev && rsi > 30 && rsi < 35)))
+                && ((rsiPrevPrev > 68 && rsiPrev < rsiPrevPrev && rsi < rsiPrev && rsi < 70)
+                || (rsiPrevPrev < 32 && rsiPrev > rsiPrevPrev && rsi > rsiPrev && rsi > 30)))
                 text += "пора открывать ";
 
             if (rsi < 32 || rsi > 68 || isInposition || !string.IsNullOrEmpty(text))
