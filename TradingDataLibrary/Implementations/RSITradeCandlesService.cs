@@ -35,11 +35,11 @@ namespace TradingDataLibrary.Implementations
 
             var text = "";
             if (!isInposition
-                && ((rsi < rsiPrev && rsi > 68)
-                || (rsi > rsiPrev && rsi < 32)))
+                && ((rsi < rsiPrev && rsiPrev < rsiPrevPrev && rsiPrev > 68)
+                || (rsi > rsiPrev && rsiPrev > rsiPrevPrev && rsiPrev < 32)))
                 text += "пора открывать ";
 
-            if (rsi < 32 || rsi > 68 || isInposition)
+            if (rsiPrev < 32 || rsiPrev > 68 || isInposition)
                 return text += $"{rsi}% ({rsiPrev}% {rsiPrevPrev}%) emaDiff:{emaDiff}% ({topEmaDiffs})";
 
             return null;
