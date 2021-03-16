@@ -35,7 +35,7 @@ namespace TradingDataLibrary.Implementations
                 text += "%E2%9D%A4 пора открывать ";
 
             if (rsi < 32 || rsi > 68 || isInposition)
-                return text += $"{rsi}% ({rsiPrev}% {rsiPrevPrev}%)";
+                return text += $"{rsi}% ({rsiPrev}% {rsiPrevPrev}% ema20 {ema20} ema200 {ema200})";
 
             return null;
         }
