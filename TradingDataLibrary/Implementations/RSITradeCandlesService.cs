@@ -31,11 +31,11 @@ namespace TradingDataLibrary.Implementations
             var ema200 = GetEma(candles, 200);
 
             var text = "";
-            if (!isInposition && ((rsi > 68 && ema20 < ema200) || (rsi < 32 && ema20 > ema200)))
+            if (!isInposition && ((rsi > 65 && ema20 < ema200) || (rsi < 35 && ema20 > ema200)))
                 text += "%E2%9D%A4 пора открывать ";
 
-            if (rsi < 32 || rsi > 68 || isInposition)
-                return text += $"{rsi}% ({rsiPrev}% {rsiPrevPrev}% ema20 {ema20} ema200 {ema200})";
+            if (rsi < 32 || rsi > 68 || isInposition || !string.IsNullOrEmpty(text))
+                return text += $"{rsi}% ({rsiPrev}% {rsiPrevPrev}%)";
 
             return null;
         }
