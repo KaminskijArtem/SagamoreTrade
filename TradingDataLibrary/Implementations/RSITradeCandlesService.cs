@@ -22,30 +22,25 @@ namespace TradingDataLibrary.Implementations
         {
             var candles = await _candlesApiClient.GetCandles(symbol, interval);
 
-            var emaSerie = GetEmaSerie(candles);
-            var emaVal = emaSerie.Values.Last().Value;
-            var emaDiff = Math.Round(Math.Abs(emaVal - (double)candles.Last().Close) * 100 / (double)candles.Last().Close, 2);
-
             var rsiList = Calculate(candles);
             var rsi = decimal.Round(rsiList.Last().Value, 2);
             var rsiPrev = decimal.Round(rsiList.Take(rsiList.Count() - 1).Last().Value, 2);
             var rsiPrevPrev = decimal.Round(rsiList.Take(rsiList.Count() - 2).Last().Value, 2);
 
-            var topEmaDiffs = GetTopEmaDiffs(emaSerie, candles);
+            var ema20 = GetEma(candles, 20);
+            var ema200 = GetEma(candles, 200);
 
             var text = "";
-            if (!isInposition
-                && ((rsi < rsiPrev && rsiPrev < rsiPrevPrev && rsiPrev > 68)
-                || (rsi > rsiPrev && rsiPrev > rsiPrevPrev && rsiPrev < 32)))
-                text += "пора открывать ";
+            if (!isInposition && ((rsi > 68 && ema20 < ema200) || (rsi < 32 && ema20 > ema200)))
+                text += "%E2%9D%A4 пора открывать ";
 
-            if (rsiPrev < 32 || rsiPrev > 68 || isInposition)
-                return text += $"{rsi}% ({rsiPrev}% {rsiPrevPrev}%) emaDiff:{emaDiff}% ({topEmaDiffs})";
+            if (rsi < 32 || rsi > 68 || isInposition)
+                return text += $"{rsi}% ({rsiPrev}% {rsiPrevPrev}%)";
 
             return null;
         }
 
-        private SingleDoubleSerie GetEmaSerie(List<Candle> candles)
+        private double GetEma(List<Candle> candles, int period)
         {
             var ohlcList = candles.Select(x =>
             new Ohlc()
@@ -58,25 +53,9 @@ namespace TradingDataLibrary.Implementations
                 Volume = x.Volume
             }).ToList();
 
-            var ema = new EMA(200, false);
+            var ema = new EMA(period, false);
             ema.Load(ohlcList);
-            return ema.Calculate();
-        }
-
-        private string GetTopEmaDiffs(SingleDoubleSerie emaSerie, List<Candle> candles)
-        {
-            var emaDiffs = new List<decimal>();
-            for (var i = candles.Count() - 1; emaSerie.Values[i].HasValue; i--)
-            {
-                emaDiffs.Add(Math.Round(Math.Abs((decimal)emaSerie.Values[i].Value - candles[i].Close) * 100 / candles[i].Close, 1));
-            }
-            emaDiffs.Sort();
-            emaDiffs.Reverse();
-            var top1 = emaDiffs.First();
-            var top76 = emaDiffs.Skip(75).First();
-            var top151 = emaDiffs.Skip(150).First();
-
-            return $"{top1}|{top76}|{top151}";
+            return ema.Calculate().Values.Last().Value;
         }
 
         public async Task<InPositionRSISignalModel> GetInPositionRSISignal(string symbol, string interval, bool isLong)
@@ -86,18 +65,10 @@ namespace TradingDataLibrary.Implementations
             var rsi = rsiList.Last().Value;
             var outputModel = new InPositionRSISignalModel { Text = "", ShouldClosePosition = false };
 
-            StaticRsiStorage.Storage.TryGetValue(symbol, out decimal rsiPrev);
-
-            if (rsiPrev != 0)
-            {
-                if ((isLong && (rsi < rsiPrev)) || (!isLong && rsi > rsiPrev))
-                    outputModel.ShouldClosePosition = true;
-            }
-            StaticRsiStorage.Storage[symbol] = rsi;
-
             if ((rsi < 50 && !isLong) || (rsi > 50 && isLong))
             {
                 outputModel.Text = $"{decimal.Round(rsi, 2)}%";
+                outputModel.ShouldClosePosition = true;
                 return outputModel;
             }
 
