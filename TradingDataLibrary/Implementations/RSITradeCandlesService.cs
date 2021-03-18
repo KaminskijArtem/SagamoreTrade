@@ -27,12 +27,17 @@ namespace TradingDataLibrary.Implementations
             var rsiPrev = decimal.Round(rsiList.Take(rsiList.Count() - 1).Last().Value, 2);
             var rsiPrevPrev = decimal.Round(rsiList.Take(rsiList.Count() - 2).Last().Value, 2);
 
+            var candle = candles.Last();
+
             var ema20 = GetEma(candles, 20);
             var ema200 = GetEma(candles, 200);
 
             var text = "";
             if (!isInposition && ((rsi > 68 && ema20 < ema200) || (rsi < 32 && ema20 > ema200)))
-                text += "%E2%9D%A4 пора открывать ";
+                text += "%E2%9D%A4 ";
+
+            if(!isInposition && (rsi > 68 && candle.IsBlack()) || (rsi < 32 && candle.IsWhite()))
+                text += "%F0%9F%98%8D ";
 
             if (rsi < 32 || rsi > 68 || isInposition)
                 return text += $"{rsi}% ({rsiPrev}% {rsiPrevPrev}%)";
