@@ -33,11 +33,13 @@ namespace TradingDataLibrary.Implementations
             var ema200 = GetEma(candles, 200);
 
             var text = "";
+            if(isInposition)
+                text += "- ";
+
             if (!isInposition && ((rsi > 68 && ema20 < ema200) || (rsi < 32 && ema20 > ema200)))
                 text += "%E2%9D%A4 ";
 
-            if(//!isInposition && 
-                ((rsi > 68 && candle.IsBlack()) || (rsi < 32 && candle.IsWhite())))
+            if(!isInposition && ((rsi > 68 && candle.IsBlack()) || (rsi < 32 && candle.IsWhite())))
                 text += "%F0%9F%98%8D ";
 
             if (rsi < 32 || rsi > 68 || isInposition)
