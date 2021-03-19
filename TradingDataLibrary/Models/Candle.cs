@@ -51,5 +51,22 @@ namespace TradingDataLibrary.Models
         {
             return Math.Abs(Open - Close);
         }
+
+        public bool IsLowerShadowBigger()
+        {
+            if(IsWhite())
+            {
+                return High - Close < Open - Low;
+            }
+            else
+            {
+                return High - Open < Close - Low;
+            }
+        }
+
+        public bool IsUpperShadowBigger()
+        {
+            return !IsLowerShadowBigger();
+        }
     }
 }
