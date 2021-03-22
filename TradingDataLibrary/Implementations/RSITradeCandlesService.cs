@@ -21,7 +21,6 @@ namespace TradingDataLibrary.Implementations
         public async Task<string> GetRSISignal(string symbol, string interval, bool isInposition)
         {
             var candles = await _candlesApiClient.GetCandles(symbol, interval);
-
             var rsiList = Calculate(candles);
             var rsi = decimal.Round(rsiList.Last().Value, 2);
             var rsiPrev = decimal.Round(rsiList.Take(rsiList.Count() - 1).Last().Value, 2);
@@ -29,21 +28,23 @@ namespace TradingDataLibrary.Implementations
 
             var candle = candles.Last();
 
-            var ema20 = GetEma(candles, 20);
-            var ema200 = GetEma(candles, 200);
-
             var text = "";
-            if(isInposition)
+            if (isInposition)
                 text += "- ";
 
-            if (!isInposition && ((rsi > 68 && ema20 < ema200) || (rsi < 32 && ema20 > ema200)))
-                text += "%E2%9D%A4 ";
-
-            if(!isInposition && ((rsi > 68 && candle.IsUpperShadowBigger()) || (rsi < 32 && candle.IsLowerShadowBigger())))
+            if (!isInposition && ((rsi > 68 && candle.IsUpperShadowBigger()) || (rsi < 32 && candle.IsLowerShadowBigger())))
                 text += "%F0%9F%98%8D ";
 
             if (rsi < 32 || rsi > 68 || isInposition)
-                return text += $"{rsi}% ({rsiPrev}% {rsiPrevPrev}%)";
+            {
+                var candles1h = await _candlesApiClient.GetCandles(symbol, "1h");
+                var rsiList1h = Calculate(candles1h);
+                var rsi1h = decimal.Round(rsiList1h.Last().Value, 2);
+                if(rsi1h > 68 || rsi1h < 32)
+                    text += "%E2%9D%A4 ";
+
+                return text += $"{rsi}% ({rsiPrev}% {rsiPrevPrev}%) 1h:{rsi1h}%";
+            }
 
             return null;
         }
