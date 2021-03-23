@@ -32,7 +32,7 @@ namespace TradingDataLibrary.Implementations
             if (isInposition)
                 text += "- ";
 
-            if ((rsi > 68 && candle.IsUpperShadowBigger()) || (rsi < 32 && candle.IsLowerShadowBigger()))
+            if ((rsi > 68 && (candle.IsUpperShadowBigger() || candle.IsBlack())) || (rsi < 32 && (candle.IsLowerShadowBigger() || candle.IsWhite())))
                 text += "%F0%9F%98%8D ";
 
             if (rsi < 32 || rsi > 68 || isInposition)
