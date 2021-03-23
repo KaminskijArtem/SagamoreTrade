@@ -28,18 +28,20 @@ namespace TradingDataLibrary.Implementations
             {
                 var text = $"- ({positionsCount}) | ";
 
-                if(positionsCount == 0)
+                if (positionsCount == 0)
                     text += "%E2%9D%A4 ";
-                else if(positionsCount == 1 && (rsi < 25 || rsi > 75))
+                else if (positionsCount == 1 && (rsi < 25 || rsi > 75))
                     text += "%E2%9D%A4%E2%9D%A4 ";
-                else if(positionsCount == 2 && (rsi < 20 || rsi > 80))
+                else if (positionsCount == 2 && (rsi < 20 || rsi > 80))
                     text += "%E2%9D%A4%E2%9D%A4%E2%9D%A4 ";
 
                 var candles1h = await _candlesApiClient.GetCandles(symbol, "1h");
                 var rsiList1h = Calculate(candles1h);
                 var rsi1h = decimal.Round(rsiList1h.Last().Value, 2);
+                var rsiPrev = decimal.Round(rsiList.Take(rsiList.Count() - 1).Last().Value, 2);
+                var rsiPrevPrev = decimal.Round(rsiList.Take(rsiList.Count() - 2).Last().Value, 2);
 
-                return text += $"{rsi}% 1h:{rsi1h}%";
+                return text += $"{rsi}% ({rsiPrev}% {rsiPrevPrev}%) 1h:{rsi1h}%";
             }
 
             return null;
