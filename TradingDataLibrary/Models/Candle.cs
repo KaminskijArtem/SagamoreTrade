@@ -56,11 +56,11 @@ namespace TradingDataLibrary.Models
         {
             if(IsWhite())
             {
-                return High - Close < Open - Low;
+                return Open - Low > High - Open;
             }
             else
             {
-                return High - Open < Close - Low;
+                return Close - Low > High - Close;
             }
         }
 
