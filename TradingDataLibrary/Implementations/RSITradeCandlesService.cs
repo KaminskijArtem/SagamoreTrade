@@ -40,7 +40,7 @@ namespace TradingDataLibrary.Implementations
                 var candles1h = await _candlesApiClient.GetCandles(symbol, "1h");
                 var rsiList1h = Calculate(candles1h);
                 var rsi1h = decimal.Round(rsiList1h.Last().Value, 2);
-                if((rsi1h > 68 && rsi < rsi1h) || (rsi1h < 32 && rsi > rsi1h))
+                if((rsi1h > 68 && (rsi < rsi1h || Math.Abs(rsi1h - rsi) < 1)) || (rsi1h < 32 && (rsi > rsi1h || Math.Abs(rsi1h - rsi) < 1)))
                     text += "%E2%9D%A4 ";
 
                 return text += $"{rsi}% ({rsiPrev}% {rsiPrevPrev}%) 1h:{rsi1h}%";
