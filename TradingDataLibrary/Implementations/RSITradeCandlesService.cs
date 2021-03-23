@@ -32,15 +32,15 @@ namespace TradingDataLibrary.Implementations
             if (isInposition)
                 text += "- ";
 
-            if ((rsi > 68 && candle.IsUpperShadowBigger()) || (rsi < 32 && candle.IsLowerShadowBigger()))
-                text += "%F0%9F%98%8D ";
+            //if ((rsi > 68 && candle.IsUpperShadowBigger()) || (rsi < 32 && candle.IsLowerShadowBigger()))
+            //    text += "%F0%9F%98%8D ";
 
             if (rsi < 32 || rsi > 68 || isInposition)
             {
                 var candles1h = await _candlesApiClient.GetCandles(symbol, "1h");
                 var rsiList1h = Calculate(candles1h);
                 var rsi1h = decimal.Round(rsiList1h.Last().Value, 2);
-                if(rsi1h > 68 || rsi1h < 32)
+                if((rsi1h > 68 && rsi < rsi1h) || (rsi1h < 32 && rsi > rsi1h))
                     text += "%E2%9D%A4 ";
 
                 return text += $"{rsi}% ({rsiPrev}% {rsiPrevPrev}%) 1h:{rsi1h}%";
