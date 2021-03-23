@@ -50,7 +50,7 @@ namespace QuartzScheduler.Jobs
             {
                 try
                 {
-                    var signal = await _tradeCandlesService.GetRSISignal(symbol, interval, allPositions.Contains(symbol));
+                    var signal = await _tradeCandlesService.GetRSISignal(symbol, interval, allPositions.Count(x => x == symbol));
                     if (signal != null)
                     {
                         if (text != null)

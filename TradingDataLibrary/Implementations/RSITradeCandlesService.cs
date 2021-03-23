@@ -18,53 +18,31 @@ namespace TradingDataLibrary.Implementations
         {
             _candlesApiClient = candlesApiClient;
         }
-        public async Task<string> GetRSISignal(string symbol, string interval, bool isInposition)
+        public async Task<string> GetRSISignal(string symbol, string interval, int positionsCount)
         {
             var candles = await _candlesApiClient.GetCandles(symbol, interval);
             var rsiList = Calculate(candles);
             var rsi = decimal.Round(rsiList.Last().Value, 2);
-            var rsiPrev = decimal.Round(rsiList.Take(rsiList.Count() - 1).Last().Value, 2);
-            var rsiPrevPrev = decimal.Round(rsiList.Take(rsiList.Count() - 2).Last().Value, 2);
 
-            var candle = candles.Last();
-
-            var text = "";
-            if (isInposition)
-                text += "- ";
-
-            if ((rsi > 68 && (candle.IsUpperShadowBigger() || candle.IsBlack())) || (rsi < 32 && (candle.IsLowerShadowBigger() || candle.IsWhite())))
-                text += "%F0%9F%98%8D ";
-
-            if (rsi < 32 || rsi > 68 || isInposition)
+            if (rsi < 30 || rsi > 70 || positionsCount > 0)
             {
+                var text = $"- ({positionsCount}) | ";
+
+                if(positionsCount == 0)
+                    text += "%E2%9D%A4 ";
+                else if(positionsCount == 1 && (rsi < 25 || rsi > 75))
+                    text += "%E2%9D%A4%E2%9D%A4 ";
+                else if(positionsCount == 2 && (rsi < 20 || rsi > 80))
+                    text += "%E2%9D%A4%E2%9D%A4%E2%9D%A4 ";
+
                 var candles1h = await _candlesApiClient.GetCandles(symbol, "1h");
                 var rsiList1h = Calculate(candles1h);
                 var rsi1h = decimal.Round(rsiList1h.Last().Value, 2);
-                if((rsi1h > 68 && (rsi < rsi1h || Math.Abs(rsi1h - rsi) < 1)) || (rsi1h < 32 && (rsi > rsi1h || Math.Abs(rsi1h - rsi) < 1)))
-                    text += "%E2%9D%A4 ";
 
-                return text += $"{rsi}% ({rsiPrev}% {rsiPrevPrev}%) 1h:{rsi1h}%";
+                return text += $"{rsi}% 1h:{rsi1h}%";
             }
 
             return null;
-        }
-
-        private double GetEma(List<Candle> candles, int period)
-        {
-            var ohlcList = candles.Select(x =>
-            new Ohlc()
-            {
-                Date = x.OpenTime.UtcDateTime,
-                Open = (double)x.Open,
-                Close = (double)x.Close,
-                High = (double)x.High,
-                Low = (double)x.Low,
-                Volume = x.Volume
-            }).ToList();
-
-            var ema = new EMA(period, false);
-            ema.Load(ohlcList);
-            return ema.Calculate().Values.Last().Value;
         }
 
         public async Task<InPositionRSISignalModel> GetInPositionRSISignal(string symbol, string interval, bool isLong)
