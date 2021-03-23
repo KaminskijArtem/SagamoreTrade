@@ -26,7 +26,9 @@ namespace TradingDataLibrary.Implementations
 
             if (rsi < 30 || rsi > 70 || positionsCount > 0)
             {
-                var text = $"- ({positionsCount}) | ";
+                var text = "";
+                if (positionsCount > 0)
+                    text += $"- ({positionsCount}) | ";
 
                 if (positionsCount == 0)
                     text += "%E2%9D%A4 ";
