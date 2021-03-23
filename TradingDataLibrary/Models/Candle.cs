@@ -66,7 +66,14 @@ namespace TradingDataLibrary.Models
 
         public bool IsUpperShadowBigger()
         {
-            return !IsLowerShadowBigger();
+            if(IsWhite())
+            {
+                return High - Close > Close - Low;
+            }
+            else
+            {
+                return High - Open > Open - Low;
+            }
         }
     }
 }
