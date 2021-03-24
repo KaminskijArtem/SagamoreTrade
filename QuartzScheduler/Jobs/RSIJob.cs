@@ -77,7 +77,7 @@ namespace QuartzScheduler.Jobs
             if (openPositionText != null)
             {
                 string baseUrl = $"https://api.telegram.org/bot{bot2Token}/sendMessage?chat_id={chatId}&text={StaticCounter.counter2}) {openPositionText}";
-                StaticCounter.counter++;
+                StaticCounter.counter2++;
                 var client = new HttpClient();
                 try
                 {
