@@ -46,6 +46,8 @@ namespace QuartzScheduler.Jobs
             var shortPositions = positions.Where(x => !x.IsLong()).ToList();
 
             string text = null;
+            string openPositionText = null;
+
             foreach (var symbol in GlobalValues.symbols)
             {
                 try
@@ -56,7 +58,13 @@ namespace QuartzScheduler.Jobs
                         if (text != null)
                             text += "\n";
 
-                        text += $"{symbol} {signal}";
+                        if (openPositionText != null)
+                            openPositionText += "\n";
+
+                        text += $"{symbol} {signal.Text}";
+
+                        if(signal.ShouldOpenPosition)
+                            openPositionText += $"{symbol} пора открывать";
                     }
                 }
                 catch (Exception ex)
@@ -65,6 +73,22 @@ namespace QuartzScheduler.Jobs
                 }
 
             }
+
+            if (openPositionText != null)
+            {
+                string baseUrl = $"https://api.telegram.org/bot{bot2Token}/sendMessage?chat_id={chatId}&text={StaticCounter.counter}) {openPositionText}";
+                StaticCounter.counter++;
+                var client = new HttpClient();
+                try
+                {
+                    await client.GetAsync(baseUrl);
+                }
+                catch (Exception ex)
+                {
+                    StaticLogger.LogMessage($"bot request {ex.Message}");
+                }
+            }
+
             if (text != null)
             {
                 string baseUrl = $"https://api.telegram.org/bot{bot1Token}/sendMessage?chat_id={chatId}&text={StaticCounter.counter}) {text}";
@@ -82,8 +106,6 @@ namespace QuartzScheduler.Jobs
 
             SendInPositionSignal(longPositions, true);
             SendInPositionSignal(shortPositions, false);
-
-
         }
 
         private async void SendInPositionSignal(List<Position> positions, bool isLong)

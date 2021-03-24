@@ -18,32 +18,41 @@ namespace TradingDataLibrary.Implementations
         {
             _candlesApiClient = candlesApiClient;
         }
-        public async Task<string> GetRSISignal(string symbol, string interval, int positionsCount)
+        public async Task<RSISignalModel> GetRSISignal(string symbol, string interval, int positionsCount)
         {
             var candles = await _candlesApiClient.GetCandles(symbol, interval);
             var rsiList = Calculate(candles);
             var rsi = decimal.Round(rsiList.Last().Value, 2);
+            var signal = new RSISignalModel();
 
             if (rsi < 30 || rsi > 70 || positionsCount > 0)
             {
-                var text = "";
                 if (positionsCount > 0)
-                    text += $"- ({positionsCount}) | ";
+                    signal.Text += $"- ({positionsCount}) | ";
 
                 if (positionsCount == 0)
-                    text += "%E2%9D%A4 ";
+                {
+                    signal.Text += "%E2%9D%A4 ";
+                    signal.ShouldOpenPosition = true;
+                }
                 else if (positionsCount == 1 && (rsi < 25 || rsi > 75))
-                    text += "%E2%9D%A4%E2%9D%A4 ";
+                {
+                    signal.Text += "%E2%9D%A4%E2%9D%A4 ";
+                    signal.ShouldOpenPosition = true;
+                }
                 else if (positionsCount == 2 && (rsi < 20 || rsi > 80))
-                    text += "%E2%9D%A4%E2%9D%A4%E2%9D%A4 ";
+                {
+                    signal.Text += "%E2%9D%A4%E2%9D%A4%E2%9D%A4 ";
+                    signal.ShouldOpenPosition = true;
+                }
 
                 var candles1h = await _candlesApiClient.GetCandles(symbol, "1h");
                 var rsiList1h = Calculate(candles1h);
                 var rsi1h = decimal.Round(rsiList1h.Last().Value, 2);
                 var rsiPrev = decimal.Round(rsiList.Take(rsiList.Count() - 1).Last().Value, 2);
                 var rsiPrevPrev = decimal.Round(rsiList.Take(rsiList.Count() - 2).Last().Value, 2);
-
-                return text += $"{rsi}% ({rsiPrev}% {rsiPrevPrev}%) 1h:{rsi1h}%";
+                signal.Text += $"{rsi}% ({rsiPrev}% {rsiPrevPrev}%) 1h:{rsi1h}%";
+                return signal;
             }
 
             return null;
