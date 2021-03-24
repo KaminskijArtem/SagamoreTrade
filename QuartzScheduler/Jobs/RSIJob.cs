@@ -20,7 +20,7 @@ namespace QuartzScheduler.Jobs
         private readonly IConfiguration _configuration;
         private readonly IPositionsApiClient _positionsApiClient;
 
-        readonly string interval = "30m";
+        readonly string interval = "1h";
         private string bot1Token;
         private string bot2Token;
         private string chatId;

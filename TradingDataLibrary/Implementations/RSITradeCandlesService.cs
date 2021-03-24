@@ -49,12 +49,9 @@ namespace TradingDataLibrary.Implementations
                     signal.IsPositionOpened = true;
                 }
 
-                var candles1h = await _candlesApiClient.GetCandles(symbol, "1h");
-                var rsiList1h = Calculate(candles1h);
-                var rsi1h = decimal.Round(rsiList1h.Last().Value, 2);
                 var rsiPrev = decimal.Round(rsiList.Take(rsiList.Count() - 1).Last().Value, 2);
                 var rsiPrevPrev = decimal.Round(rsiList.Take(rsiList.Count() - 2).Last().Value, 2);
-                signal.Text += $"{rsi}% ({rsiPrev}% {rsiPrevPrev}%) 1h:{rsi1h}%";
+                signal.Text += $"{rsi}% ({rsiPrev}% {rsiPrevPrev}%)%";
                 return signal;
             }
 
