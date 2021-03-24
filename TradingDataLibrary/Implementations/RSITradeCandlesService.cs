@@ -39,11 +39,13 @@ namespace TradingDataLibrary.Implementations
                 {
                     signal.Text += "%E2%9D%A4%E2%9D%A4 ";
                     signal.ShouldOpenPosition = true;
+                    signal.IsPositionOpened = true;
                 }
                 else if (positionsCount == 2 && (rsi < 20 || rsi > 80))
                 {
                     signal.Text += "%E2%9D%A4%E2%9D%A4%E2%9D%A4 ";
                     signal.ShouldOpenPosition = true;
+                    signal.IsPositionOpened = true;
                 }
 
                 var candles1h = await _candlesApiClient.GetCandles(symbol, "1h");
