@@ -34,7 +34,7 @@ namespace TradingDataLibrary.Implementations
                 {
                     signal.Text += "%E2%9D%A4 ";
                     signal.ShouldOpenPosition = true;
-                    signal.IsPositionOpened = true;
+                    //signal.IsPositionOpened = true;
                 }
                 else if (positionsCount == 1 && (rsi < 25 || rsi > 75))
                 {
