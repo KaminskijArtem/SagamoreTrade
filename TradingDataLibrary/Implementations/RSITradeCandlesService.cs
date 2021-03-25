@@ -28,13 +28,17 @@ namespace TradingDataLibrary.Implementations
             if (rsi < 30 || rsi > 70 || positionsCount > 0)
             {
                 if (positionsCount > 0)
-                    signal.Text += $"- ({positionsCount}) | ";
+                    signal.Text += $"- (позиций:{positionsCount}) | ";
+
+                var rsiCount = CalculateRSICount(rsiList);
+                if (rsiCount > 0)
+                    signal.Text += $"(пиков rsi:{rsiCount}) | ";
 
                 if (positionsCount == 0)
                 {
                     signal.Text += "%E2%9D%A4 ";
                     signal.ShouldOpenPosition = true;
-                    //signal.IsPositionOpened = true;
+                    signal.IsPositionOpened = true;
                 }
                 else if (positionsCount == 1 && (rsi < 25 || rsi > 75))
                 {
@@ -56,6 +60,31 @@ namespace TradingDataLibrary.Implementations
             }
 
             return null;
+        }
+
+        private int CalculateRSICount(List<decimal?> rsiList)
+        {
+            if (rsiList.Last() > 70)
+            {
+                var result = 1;
+                for (var i = rsiList.Count - 1; rsiList[i] > 50; i--)
+                {
+                    if(rsiList[i] > 70 && rsiList[i-1] < 70)
+                        result++;
+                }
+                return result;
+            }
+            else if (rsiList.Last() < 30)
+            {
+                var result = 1;
+                for (var i = rsiList.Count - 1; rsiList[i] < 50; i--)
+                {
+                    if(rsiList[i] < 30 && rsiList[i-1] > 30)
+                        result++;
+                }
+                return result;
+            }
+            return 0;
         }
 
         public async Task<InPositionRSISignalModel> GetInPositionRSISignal(string symbol, string interval, bool isLong)
