@@ -64,27 +64,24 @@ namespace TradingDataLibrary.Implementations
 
         private int CalculateRSICount(List<decimal?> rsiList)
         {
+            var result = 0;
             if (rsiList.Last() > 70)
             {
-                var result = 1;
                 for (var i = rsiList.Count - 1; rsiList[i] > 50; i--)
                 {
                     if(rsiList[i] > 70 && rsiList[i-1] < 70)
                         result++;
                 }
-                return result;
             }
             else if (rsiList.Last() < 30)
             {
-                var result = 1;
                 for (var i = rsiList.Count - 1; rsiList[i] < 50; i--)
                 {
                     if(rsiList[i] < 30 && rsiList[i-1] > 30)
                         result++;
                 }
-                return result;
             }
-            return 0;
+            return result;
         }
 
         public async Task<InPositionRSISignalModel> GetInPositionRSISignal(string symbol, string interval, bool isLong)
