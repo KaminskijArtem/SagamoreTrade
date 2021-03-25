@@ -27,31 +27,14 @@ namespace TradingDataLibrary.Implementations
 
             if (rsi < 30 || rsi > 70 || positionsCount > 0)
             {
+                signal.ShouldOpenPosition = true;
+
                 if (positionsCount > 0)
                     signal.Text += $"- (позиций:{positionsCount}) | ";
 
                 var rsiCount = CalculateRSICount(rsiList);
                 if (rsiCount > 0)
                     signal.Text += $"(пиков rsi:{rsiCount}) | ";
-
-                if (positionsCount == 0)
-                {
-                    signal.Text += "%E2%9D%A4 ";
-                    signal.ShouldOpenPosition = true;
-                    signal.IsPositionOpened = true;
-                }
-                else if (positionsCount == 1 && (rsi < 25 || rsi > 75))
-                {
-                    signal.Text += "%E2%9D%A4%E2%9D%A4 ";
-                    signal.ShouldOpenPosition = true;
-                    signal.IsPositionOpened = true;
-                }
-                else if (positionsCount == 2 && (rsi < 20 || rsi > 80))
-                {
-                    signal.Text += "%E2%9D%A4%E2%9D%A4%E2%9D%A4 ";
-                    signal.ShouldOpenPosition = true;
-                    signal.IsPositionOpened = true;
-                }
 
                 var rsiPrev = decimal.Round(rsiList.Take(rsiList.Count() - 1).Last().Value, 2);
                 var rsiPrevPrev = decimal.Round(rsiList.Take(rsiList.Count() - 2).Last().Value, 2);
