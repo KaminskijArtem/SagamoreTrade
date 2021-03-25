@@ -63,7 +63,7 @@ namespace QuartzScheduler.Jobs
 
                         text += $"{symbol} {signal.Text}";
 
-                        if(signal.IsPositionOpened)
+                        if(signal.IsNotify)
                             openPositionText += $"{symbol} пора открывать";
                     }
                 }
