@@ -25,7 +25,7 @@ namespace TradingDataLibrary.Implementations
             var rsi = decimal.Round(rsiList.Last().Value, 2);
             var signal = new RSISignalModel();
 
-            if (rsi < 30 || rsi > 70 || positionsCount > 0)
+            if (rsi < 30 || positionsCount > 0)
             {
                 if (positionsCount > 0)
                     signal.Text += $"- (позиций:{positionsCount}) ";
@@ -34,7 +34,7 @@ namespace TradingDataLibrary.Implementations
                 if (rsiCount > 0)
                     signal.Text += $"(пиков rsi:{rsiCount}) ";
 
-                if((positionsCount + 1 < rsiCount && rsi < 30) || (positionsCount + 2 < rsiCount && rsi > 70))
+                if(positionsCount + 1 < rsiCount && rsi < 30)
                 { 
                     signal.Text += "%E2%9D%A4";
                     signal.IsNotify = true;
@@ -52,17 +52,9 @@ namespace TradingDataLibrary.Implementations
         private int CalculateRSICount(List<decimal?> rsiList)
         {
             var result = 0;
-            if (rsiList.Last() > 70)
+            if (rsiList.Last() < 30)
             {
-                for (var i = rsiList.Count - 1; rsiList[i] > 50; i--)
-                {
-                    if(rsiList[i] > 70 && rsiList[i-1] < 70)
-                        result++;
-                }
-            }
-            else if (rsiList.Last() < 30)
-            {
-                for (var i = rsiList.Count - 1; rsiList[i] < 50; i--)
+                for (var i = rsiList.Count - 1; rsiList[i] < 70; i--)
                 {
                     if(rsiList[i] < 30 && rsiList[i-1] > 30)
                         result++;
@@ -71,14 +63,14 @@ namespace TradingDataLibrary.Implementations
             return result;
         }
 
-        public async Task<InPositionRSISignalModel> GetInPositionRSISignal(string symbol, string interval, bool isLong)
+        public async Task<InPositionRSISignalModel> GetInPositionRSISignal(string symbol, string interval, Position position)
         {
             var candles = await _candlesApiClient.GetCandles(symbol, interval);
             var rsiList = Calculate(candles);
             var rsi = rsiList.Last().Value;
             var outputModel = new InPositionRSISignalModel { Text = "", ShouldClosePosition = false };
 
-            if ((rsi < 50 && !isLong) || (rsi > 50 && isLong))
+            if (rsi > 70 && candles.Last().Close > position.openPrice)
             {
                 outputModel.Text = $"{decimal.Round(rsi, 2)}%";
                 outputModel.ShouldClosePosition = true;

@@ -14,6 +14,7 @@ namespace TradingDataLibrary.Models
         public Guid id { get; set; }
         public string symbol { get; set; }
         public double openQuantity { get; set; }
+        public decimal openPrice { get; set; }
         public bool IsLong()
         {
             return openQuantity > 0;

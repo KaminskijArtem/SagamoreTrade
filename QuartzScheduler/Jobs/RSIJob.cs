@@ -43,7 +43,6 @@ namespace QuartzScheduler.Jobs
 
             var allPositions = positions.Select(x => x.symbol).ToList();
             var longPositions = positions.Where(x => x.IsLong()).ToList();
-            var shortPositions = positions.Where(x => !x.IsLong()).ToList();
 
             string text = null;
             string openPositionText = null;
@@ -104,18 +103,17 @@ namespace QuartzScheduler.Jobs
                 }
             }
 
-            SendInPositionSignal(longPositions, true);
-            SendInPositionSignal(shortPositions, false);
+            SendInPositionSignal(longPositions);
         }
 
-        private async void SendInPositionSignal(List<Position> positions, bool isLong)
+        private async void SendInPositionSignal(List<Position> positions)
         {
             string text = null;
             foreach (var position in positions)
             {
                 try
                 {
-                    var signal = await _tradeCandlesService.GetInPositionRSISignal(position.symbol, interval, isLong);
+                    var signal = await _tradeCandlesService.GetInPositionRSISignal(position.symbol, interval, position);
                     if (signal != null)
                     {
                         if (text != null)
