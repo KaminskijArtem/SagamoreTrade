@@ -1,20 +1,19 @@
-﻿using Quartz;
+﻿using Microsoft.Extensions.Configuration;
+using Quartz;
+using QuartzScheduler.Base;
+using QuartzScheduler.Logging;
 using System;
 using System.Collections.Generic;
-using TradingDataLibrary.Interfaces;
-using System.Threading.Tasks;
-using QuartzScheduler.Base;
-using System.Net.Http;
-using Microsoft.Extensions.Options;
-using Microsoft.Extensions.Configuration;
-using QuartzScheduler.Logging;
-using TradingDataLibrary.ApiClient;
 using System.Linq;
-using TradingDataLibrary.Models;
+using System.Net.Http;
+using System.Text;
+using System.Threading.Tasks;
+using TradingDataLibrary.ApiClient;
+using TradingDataLibrary.Interfaces;
 
 namespace QuartzScheduler.Jobs
 {
-    public class RSIJob : IJob
+    public class BuyJob : IJob
     {
         private readonly IRSITradeCandlesService _tradeCandlesService;
         private readonly IConfiguration _configuration;
@@ -25,7 +24,7 @@ namespace QuartzScheduler.Jobs
         private string bot2Token;
         private string chatId;
 
-        public RSIJob(IRSITradeCandlesService tradeCandlesService,
+        public BuyJob(IRSITradeCandlesService tradeCandlesService,
             IConfiguration configuration,
             IPositionsApiClient positionsApiClient)
         {
@@ -40,7 +39,6 @@ namespace QuartzScheduler.Jobs
         public async Task Execute(IJobExecutionContext context)
         {
             var positions = await _positionsApiClient.GetAllPositions();
-
             var allPositions = positions.Select(x => x.symbol).ToList();
             var longPositions = positions.Where(x => x.IsLong()).ToList();
 
@@ -62,13 +60,13 @@ namespace QuartzScheduler.Jobs
 
                         text += $"{symbol} {signal.Text}";
 
-                        if(signal.IsNotify)
+                        if (signal.IsNotify)
                             openPositionText += $"{symbol} пора открывать";
                     }
                 }
                 catch (Exception ex)
                 {
-                    StaticLogger.LogMessage($"{symbol} simpleRequest {ex.Message}");
+                    StaticLogger.LogMessage($"BuyJob {symbol} {ex.Message}");
                 }
 
             }
@@ -84,7 +82,7 @@ namespace QuartzScheduler.Jobs
                 }
                 catch (Exception ex)
                 {
-                    StaticLogger.LogMessage($"bot request {ex.Message}");
+                    StaticLogger.LogMessage($"BuyJob bot2 request {ex.Message}");
                 }
             }
 
@@ -99,53 +97,7 @@ namespace QuartzScheduler.Jobs
                 }
                 catch (Exception ex)
                 {
-                    StaticLogger.LogMessage($"bot request {ex.Message}");
-                }
-            }
-
-            SendInPositionSignal(longPositions);
-        }
-
-        private async void SendInPositionSignal(List<Position> positions)
-        {
-            string text = null;
-            foreach (var position in positions)
-            {
-                try
-                {
-                    var signal = await _tradeCandlesService.GetInPositionRSISignal(position.symbol, interval, position);
-                    if (signal != null)
-                    {
-                        if (text != null)
-                            text += "\n";
-
-                        text += $"{position.symbol} {signal.Text}";
-
-                        if(signal.ShouldClosePosition)
-                        { 
-                            var result = await _positionsApiClient.ClosePosition(position.id);
-                            if(result)
-                                 text += " закрыта";
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    StaticLogger.LogMessage($"{position} inPositionRequest {ex.Message}");
-                }
-            }
-            if (text != null)
-            {
-                string baseUrl = $"https://api.telegram.org/bot{bot2Token}/sendMessage?chat_id={chatId}&text={StaticCounter.counter2}) {text}";
-                StaticCounter.counter2++;
-                var client = new HttpClient();
-                try
-                {
-                    await client.GetAsync(baseUrl);
-                }
-                catch (Exception ex)
-                {
-                    StaticLogger.LogMessage($"bot2 request {ex.Message}");
+                    StaticLogger.LogMessage($"BuyJob bot1 request {ex.Message}");
                 }
             }
         }
