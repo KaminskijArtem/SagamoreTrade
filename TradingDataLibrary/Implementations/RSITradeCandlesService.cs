@@ -63,6 +63,15 @@ namespace TradingDataLibrary.Implementations
                 };
                 return outputModel;
             }
+            else if (rsi > 70)
+            {
+                var outputModel = new InPositionRSISignalModel
+                {
+                    Text = $"{decimal.Round(rsi, 2)}% может стоит закрыть?",
+                    ShouldClosePosition = false
+                };
+                return outputModel;
+            }
 
             return null;
         }
