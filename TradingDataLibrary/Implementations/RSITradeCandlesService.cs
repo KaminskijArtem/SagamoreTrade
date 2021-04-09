@@ -34,7 +34,7 @@ namespace TradingDataLibrary.Implementations
                 if (rsiCount > 0)
                     signal.Text += $"(пиков rsi:{rsiCount}) ";
 
-                if (positionsCount + 1 < rsiCount && rsi < 30)
+                if (positionsCount == 0 && rsi < 30)
                 {
                     signal.Text += "%E2%9D%A4";
                     signal.IsNotify = true;
