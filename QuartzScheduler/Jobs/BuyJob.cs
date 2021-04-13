@@ -55,10 +55,10 @@ namespace QuartzScheduler.Jobs
                         if (text != null)
                             text += "\n";
 
-                        if (openPositionText != null)
-                            openPositionText += "\n";
-
                         text += $"{symbol} {signal.Text}";
+
+                        if (openPositionText != null && signal.IsNotify)
+                            openPositionText += "\n";
 
                         if (signal.IsNotify)
                             openPositionText += $"{symbol} пора открывать";
