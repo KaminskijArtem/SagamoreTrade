@@ -30,11 +30,11 @@ namespace TradingDataLibrary.Implementations
                 if (positionsCount > 0)
                     signal.Text += $"- (позиций:{positionsCount}) ";
 
-                var rsiCount = CalculateRSICount(rsiList);
-                if (rsiCount > 0)
-                    signal.Text += $"(пиков rsi:{rsiCount}) ";
+                var rsiPeaksCount = CalculateRSIPeaksCount(rsiList);
+                if (rsiPeaksCount > 0)
+                    signal.Text += $"(пиков rsi:{rsiPeaksCount}) ";
 
-                if (positionsCount == 0 && rsiCount > 1 && rsi < 30)
+                if (positionsCount == 0 && rsiPeaksCount > 1 && rsi < 30)
                 {
                     signal.Text += "%E2%9D%A4";
                     signal.IsNotify = true;
@@ -129,14 +129,14 @@ namespace TradingDataLibrary.Implementations
 
             return RSI;
         }
-        private int CalculateRSICount(List<decimal?> rsiList)
+        private int CalculateRSIPeaksCount(List<decimal?> rsiList)
         {
             var result = 0;
             if (rsiList.Last() < 30)
             {
                 for (var i = rsiList.Count - 1; rsiList[i] < 70; i--)
                 {
-                    if (rsiList[i] < 30 && rsiList[i - 1] > 30)
+                    if (rsiList[i] < 30 && rsiList.Take(i).TakeLast(5).All(x => x > 30))
                         result++;
                 }
             }
