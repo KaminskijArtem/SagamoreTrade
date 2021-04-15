@@ -44,7 +44,7 @@ namespace TradingDataLibrary.ApiClient
             return objPositions.positions;
         }
 
-        private static string CreateSignature(string queryString, string secret)
+        private string CreateSignature(string queryString, string secret)
         {
 
             var keyBytes = Encoding.UTF8.GetBytes(secret);
