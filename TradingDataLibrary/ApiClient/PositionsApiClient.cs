@@ -25,6 +25,7 @@ namespace TradingDataLibrary.ApiClient
         }
         public async Task<List<Position>> GetAllPositions()
         {
+            Test();
             var client = new HttpClient();
             var time = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 
@@ -42,6 +43,24 @@ namespace TradingDataLibrary.ApiClient
             objPositions.positions.ForEach(x => x.symbol = x.symbol.Replace("_LEVERAGE", "").Replace(".", ""));
 
             return objPositions.positions;
+        }
+
+        private async void Test()
+        {
+            var client = new HttpClient();
+            var time = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+
+            var sign = CreateSignature($"timestamp={time}&symbol=GE", secretKey);
+            var request = new HttpRequestMessage()
+            {
+                RequestUri = 
+                new Uri($"https://api-adapter.backend.currency.com/api/v1/myTrades?timestamp={time}&symbol=GE&signature={sign}"),
+                Method = HttpMethod.Get,
+            };
+            request.Headers.Add("X-MBX-APIKEY", key);
+
+            var response = await client.SendAsync(request);
+            var contents = await response.Content.ReadAsStringAsync();
         }
 
         private string CreateSignature(string queryString, string secret)
