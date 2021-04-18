@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace QuartzScheduler.Jobs
+﻿namespace TelegramApiLibrary
 {
     public class StaticCounter
     {

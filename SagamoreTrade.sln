@@ -9,6 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuartzScheduler", "QuartzSc
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TradingDataLibrary", "TradingDataLibrary\TradingDataLibrary.csproj", "{239878A0-E7DD-44DB-8887-3A96E4F4F34B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TelegramApiLibrary", "TelegramApiLibrary\TelegramApiLibrary.csproj", "{8596338A-C282-465D-BDEE-0EBA17A09390}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{239878A0-E7DD-44DB-8887-3A96E4F4F34B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{239878A0-E7DD-44DB-8887-3A96E4F4F34B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{239878A0-E7DD-44DB-8887-3A96E4F4F34B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8596338A-C282-465D-BDEE-0EBA17A09390}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8596338A-C282-465D-BDEE-0EBA17A09390}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8596338A-C282-465D-BDEE-0EBA17A09390}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8596338A-C282-465D-BDEE-0EBA17A09390}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

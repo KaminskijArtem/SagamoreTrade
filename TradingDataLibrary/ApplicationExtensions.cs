@@ -1,7 +1,4 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using TradingDataLibrary.ApiClient;
 using TradingDataLibrary.Implementations;
 using TradingDataLibrary.Interfaces;

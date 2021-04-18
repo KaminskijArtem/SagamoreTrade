@@ -12,6 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\TelegramApiLibrary\TelegramApiLibrary.csproj" />
     <ProjectReference Include="..\TradingDataLibrary\TradingDataLibrary.csproj" />
   </ItemGroup>
 

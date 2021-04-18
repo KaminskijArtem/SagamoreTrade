@@ -1,13 +1,11 @@
-﻿using Microsoft.Extensions.Configuration;
-using Quartz;
+﻿using Quartz;
 using QuartzScheduler.Base;
 using QuartzScheduler.Logging;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
+using TelegramApiLibrary;
+using TelegramApiLibrary.Interfaces;
 using TradingDataLibrary.ApiClient;
 using TradingDataLibrary.Interfaces;
 
@@ -16,25 +14,18 @@ namespace QuartzScheduler.Jobs
     public class BuyJob : IJob
     {
         private readonly IRSITradeCandlesService _tradeCandlesService;
-        private readonly IConfiguration _configuration;
+        private readonly ITelegramApiClient _telegramApiClient;
         private readonly IPositionsApiClient _positionsApiClient;
 
         readonly string interval = "30m";
-        private string bot1Token;
-        private string bot2Token;
-        private string chatId;
 
         public BuyJob(IRSITradeCandlesService tradeCandlesService,
-            IConfiguration configuration,
+            ITelegramApiClient telegramApiClient,
             IPositionsApiClient positionsApiClient)
         {
             _tradeCandlesService = tradeCandlesService;
-            _configuration = configuration;
+            _telegramApiClient = telegramApiClient;
             _positionsApiClient = positionsApiClient;
-
-            bot1Token = _configuration["TelegramConfiguration:Bot1Token"];
-            bot2Token = _configuration["TelegramConfiguration:Bot2Token"];
-            chatId = _configuration["TelegramConfiguration:ChatId"];
         }
         public async Task Execute(IJobExecutionContext context)
         {
@@ -68,17 +59,13 @@ namespace QuartzScheduler.Jobs
                 {
                     StaticLogger.LogMessage($"BuyJob {symbol} {ex.Message}");
                 }
-
             }
 
             if (openPositionText != null)
             {
-                string baseUrl = $"https://api.telegram.org/bot{bot2Token}/sendMessage?chat_id={chatId}&text={StaticCounter.counter2}) {openPositionText}";
-                StaticCounter.counter2++;
-                var client = new HttpClient();
                 try
                 {
-                    await client.GetAsync(baseUrl);
+                    await _telegramApiClient.SendMessage(TelegramApiBots.NotifyBot, openPositionText);
                 }
                 catch (Exception ex)
                 {
@@ -88,12 +75,9 @@ namespace QuartzScheduler.Jobs
 
             if (text != null)
             {
-                string baseUrl = $"https://api.telegram.org/bot{bot1Token}/sendMessage?chat_id={chatId}&text={StaticCounter.counter}) {text}";
-                StaticCounter.counter++;
-                var client = new HttpClient();
                 try
                 {
-                    await client.GetAsync(baseUrl);
+                    await _telegramApiClient.SendMessage(TelegramApiBots.SilentBot, text);
                 }
                 catch (Exception ex)
                 {
