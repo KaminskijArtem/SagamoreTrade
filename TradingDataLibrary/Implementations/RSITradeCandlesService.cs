@@ -32,7 +32,8 @@ namespace TradingDataLibrary.Implementations
                     signal.Text += $"(пиков rsi:{rsiPeaksCount}) ";
 
                 var rsiPeaksHistory = GetRSIPeaksHistory(rsiList);
-                signal.Text += $"(история rsi:{rsiPeaksHistory}) ";
+                if(!string.IsNullOrEmpty(rsiPeaksHistory))
+                    signal.Text += $"(история rsi:{rsiPeaksHistory}) ";
 
                 if (positionsCount == 0 && rsiPeaksCount > 1 && rsi < 30)
                 {
