@@ -31,6 +31,9 @@ namespace TradingDataLibrary.Implementations
                 if (rsiPeaksCount > 0)
                     signal.Text += $"(пиков rsi:{rsiPeaksCount}) ";
 
+                var rsiPeaksHistory = GetRSIPeaksHistory(rsiList);
+                signal.Text += $"(история rsi:{rsiPeaksHistory}) ";
+
                 if (positionsCount == 0 && rsiPeaksCount > 1 && rsi < 30)
                 {
                     signal.Text += "%E2%9D%A4";
@@ -45,6 +48,36 @@ namespace TradingDataLibrary.Implementations
 
             return null;
         }
+
+        private string GetRSIPeaksHistory(List<decimal?> rsiList)
+        {
+            var result = "";
+            var rsiUp = 0;
+            var rsiDown = 0;
+
+            if (rsiList.Last() < 30)
+            {
+                for (var i = rsiList.Count - 1; rsiList[i] != null; i--)
+                {
+                    if (rsiList[i] < 30 && rsiList.Take(i).TakeLast(5).All(x => x > 30))
+                    {
+                        if(rsiUp != 0)
+                            result = result.Insert(0, $"{rsiUp}↑");
+                        rsiDown++;
+                        rsiUp = 0;
+                    }
+                    if (rsiList[i] > 70 && rsiList.Take(i).TakeLast(5).All(x => x < 70))
+                    {
+                        if (rsiDown != 0)
+                            result = result.Insert(0, $"{rsiDown}↓");
+                        rsiUp++;
+                        rsiDown = 0;
+                    }
+                }
+            }
+            return result;
+        }
+
         public async Task<InPositionRSISignalModel> GetInPositionRSISignal(string symbol, string interval, Position position)
         {
             var candles = await _candlesApiClient.GetCandles(symbol, interval);

@@ -13,7 +13,8 @@ namespace TradingDataLibrary.ApiClient
 
         public async Task<List<Candle>> GetCandles(string symbol, string interval)
         {
-            var streamTask = client.GetStreamAsync($"https://api-adapter.backend.currency.com/api/v1/klines?symbol={symbol}&interval={interval}");
+            var streamTask = client.GetStreamAsync(
+                $"https://api-adapter.backend.currency.com/api/v1/klines?symbol={symbol}&interval={interval}&limit=1000");
             var output = new List<Candle>();
 
             var objCandles = await JsonSerializer.DeserializeAsync<List<List<JsonElement>>>(await streamTask);

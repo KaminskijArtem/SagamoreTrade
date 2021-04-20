@@ -29,7 +29,6 @@ namespace QuartzScheduler.Jobs
         public async Task Execute(IJobExecutionContext context)
         {
             var positions = await _positionsApiClient.GetAllPositions();
-            var longPositions = positions.Where(x => x.IsLong()).ToList();
 
             string text = null;
             foreach (var position in positions)
