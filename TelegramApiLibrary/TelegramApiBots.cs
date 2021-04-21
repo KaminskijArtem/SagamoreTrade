@@ -2,7 +2,8 @@
 {
     public enum TelegramApiBots
     {
-        SilentBot,
-        NotifyBot
+        InfoBot,
+        SellBot,
+        BuyBot
     }
 }

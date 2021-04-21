@@ -22,16 +22,22 @@ namespace TelegramApiLibrary.Implementations
 
             switch (bot)
             {
-                case TelegramApiBots.SilentBot:
+                case TelegramApiBots.InfoBot:
                     {
                         botToken = _configuration["TelegramConfiguration:Bot1Token"];
                         counter = StaticCounter.counter++;
                         break;
                     }
-                case TelegramApiBots.NotifyBot:
+                case TelegramApiBots.SellBot:
                     {
                         botToken = _configuration["TelegramConfiguration:Bot2Token"];
                         counter = StaticCounter.counter2++;
+                        break;
+                    }
+                case TelegramApiBots.BuyBot:
+                    {
+                        botToken = _configuration["TelegramConfiguration:Bot3Token"];
+                        counter = StaticCounter.counter3++;
                         break;
                     }
                 default: break;
