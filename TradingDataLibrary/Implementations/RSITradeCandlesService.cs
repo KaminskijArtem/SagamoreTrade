@@ -57,14 +57,14 @@ namespace TradingDataLibrary.Implementations
 
             for (var i = rsiList.Count - 1; rsiList[i] != null; i--)
             {
-                if (rsiList[i] < 30 && rsiList.Take(i).TakeLast(5).All(x => x > 30))
+                if (rsiList[i] < 30 && rsiList.Take(i).TakeLast(16).All(x => x > 30))
                 {
                     if (rsiUp != 0)
                         result = result.Insert(0, $"{rsiUp}↑");
                     rsiDown++;
                     rsiUp = 0;
                 }
-                if (rsiList[i] > 70 && rsiList.Take(i).TakeLast(5).All(x => x < 70))
+                if (rsiList[i] > 70 && rsiList.Take(i).TakeLast(16).All(x => x < 70))
                 {
                     if (rsiDown != 0)
                         result = result.Insert(0, $"{rsiDown}↓");
@@ -82,7 +82,7 @@ namespace TradingDataLibrary.Implementations
             var rsiList = CalculateRSI(candles);
             var rsi = rsiList.Last().Value;
 
-            if (rsi > 70 && candles.Last().Close > position.openPrice)
+            if (rsi > 70)// && candles.Last().Close > position.openPrice)
             {
                 var outputModel = new InPositionRSISignalModel
                 {
@@ -91,15 +91,15 @@ namespace TradingDataLibrary.Implementations
                 };
                 return outputModel;
             }
-            else if (rsi > 70)
-            {
-                var outputModel = new InPositionRSISignalModel
-                {
-                    Text = $"{decimal.Round(rsi, 2)}% может стоит закрыть?",
-                    ShouldClosePosition = false
-                };
-                return outputModel;
-            }
+            //else if (rsi > 70)
+            //{
+            //    var outputModel = new InPositionRSISignalModel
+            //    {
+            //        Text = $"{decimal.Round(rsi, 2)}% может стоит закрыть?",
+            //        ShouldClosePosition = false
+            //    };
+            //    return outputModel;
+            //}
 
             return null;
         }
@@ -164,7 +164,7 @@ namespace TradingDataLibrary.Implementations
             {
                 for (var i = rsiList.Count - 1; rsiList[i] < 70; i--)
                 {
-                    if (rsiList[i] < 30 && rsiList.Take(i).TakeLast(5).All(x => x > 30))
+                    if (rsiList[i] < 30 && rsiList.Take(i).TakeLast(16).All(x => x > 30))
                         result++;
                 }
             }
