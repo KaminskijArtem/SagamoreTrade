@@ -57,14 +57,14 @@ namespace TradingDataLibrary.Implementations
 
             for (var i = rsiList.Count - 1; rsiList[i] != null; i--)
             {
-                if (rsiList[i] < 30 && rsiList.Take(i).TakeLast(16).All(x => x > 30))
+                if (rsiList[i] < 30 && rsiList.Take(i).TakeLast(8).All(x => x > 30))
                 {
                     if (rsiUp != 0)
                         result = result.Insert(0, $"{rsiUp}↑");
                     rsiDown++;
                     rsiUp = 0;
                 }
-                if (rsiList[i] > 70 && rsiList.Take(i).TakeLast(16).All(x => x < 70))
+                if (rsiList[i] > 70 && rsiList.Take(i).TakeLast(8).All(x => x < 70))
                 {
                     if (rsiDown != 0)
                         result = result.Insert(0, $"{rsiDown}↓");
@@ -164,7 +164,7 @@ namespace TradingDataLibrary.Implementations
             {
                 for (var i = rsiList.Count - 1; rsiList[i] < 70; i--)
                 {
-                    if (rsiList[i] < 30 && rsiList.Take(i).TakeLast(16).All(x => x > 30))
+                    if (rsiList[i] < 30 && rsiList.Take(i).TakeLast(8).All(x => x > 30))
                         result++;
                 }
             }
