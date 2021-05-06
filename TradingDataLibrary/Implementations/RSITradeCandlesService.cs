@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using TradingDataLibrary.ApiClient;
@@ -34,10 +35,17 @@ namespace TradingDataLibrary.Implementations
                 var rsiPeaksHistory = GetRSIPeaksHistory(rsiList);
                 signal.Text += $"(история rsi:{rsiPeaksHistory}) ";
 
-                if (positionsCount == 0 && rsiPeaksCount > 1 && rsi < 30)
+                if (positionsCount == 0 && rsi < 30)
                 {
-                    signal.Text += "%E2%9D%A4";
-                    signal.IsNotify = true;
+                    var rsiPeaksHistoryInt = Array.ConvertAll(rsiPeaksHistory.Split('↑', '↓').Where(x => !string.IsNullOrEmpty(x)).ToArray(), s => int.Parse(s));
+                    var shouldOpen = rsiPeaksHistoryInt.All(x => x <= rsiPeaksCount);
+
+                    if (shouldOpen)
+                    {
+                        signal.Text += "%E2%9D%A4";
+                        signal.IsNotify = true;
+                    }
+
                 }
 
                 var rsiPrev = decimal.Round(rsiList.Take(rsiList.Count() - 1).Last().Value, 2);
