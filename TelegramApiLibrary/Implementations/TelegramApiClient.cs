@@ -40,6 +40,18 @@ namespace TelegramApiLibrary.Implementations
                         counter = StaticCounter.counter3++;
                         break;
                     }
+                case TelegramApiBots.NoLeverageInfoBot:
+                    {
+                        botToken = _configuration["TelegramConfiguration:Bot4Token"];
+                        counter = StaticCounter.counter4++;
+                        break;
+                    }
+                case TelegramApiBots.NoLeverageBuyBot:
+                    {
+                        botToken = _configuration["TelegramConfiguration:Bot5Token"];
+                        counter = StaticCounter.counter5++;
+                        break;
+                    }
                 default: break;
             }
 

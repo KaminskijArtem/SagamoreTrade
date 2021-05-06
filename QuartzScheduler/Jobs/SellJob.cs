@@ -64,7 +64,7 @@ namespace QuartzScheduler.Jobs
                 }
                 catch (Exception ex)
                 {
-                    StaticLogger.LogMessage($"SellJob bot2 request {ex.Message}");
+                    StaticLogger.LogMessage($"SellJob SellBot request {ex.Message}");
                 }
             }
         }

@@ -4,6 +4,8 @@
     {
         InfoBot,
         SellBot,
-        BuyBot
+        BuyBot,
+        NoLeverageInfoBot,
+        NoLeverageBuyBot
     }
 }

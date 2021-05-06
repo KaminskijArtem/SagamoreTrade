@@ -11,36 +11,29 @@ using TradingDataLibrary.Interfaces;
 
 namespace QuartzScheduler.Jobs
 {
-    public class BuyJob : IJob
+    public class NoLeverageBuyJob : IJob
     {
         private readonly IRSITradeCandlesService _tradeCandlesService;
         private readonly ITelegramApiClient _telegramApiClient;
-        private readonly IPositionsApiClient _positionsApiClient;
 
         readonly string interval = "1h";
 
-        public BuyJob(IRSITradeCandlesService tradeCandlesService,
-            ITelegramApiClient telegramApiClient,
-            IPositionsApiClient positionsApiClient)
+        public NoLeverageBuyJob(IRSITradeCandlesService tradeCandlesService,
+            ITelegramApiClient telegramApiClient)
         {
             _tradeCandlesService = tradeCandlesService;
             _telegramApiClient = telegramApiClient;
-            _positionsApiClient = positionsApiClient;
         }
         public async Task Execute(IJobExecutionContext context)
         {
-            var positions = await _positionsApiClient.GetAllPositions();
-            var allPositions = positions.Select(x => x.symbol).ToList();
-            var longPositions = positions.Where(x => x.IsLong()).ToList();
-
             string text = null;
             string openPositionText = null;
 
-            foreach (var symbol in GlobalValues.symbols)
+            foreach (var symbol in NoLeverageGlobalValues.symbols)
             {
                 try
                 {
-                    var signal = await _tradeCandlesService.GetRSISignal(symbol, interval, allPositions.Count(x => x == symbol));
+                    var signal = await _tradeCandlesService.GetRSISignal(symbol, interval, 0);
                     if (signal != null)
                     {
                         if (text != null)
@@ -65,11 +58,11 @@ namespace QuartzScheduler.Jobs
             {
                 try
                 {
-                    await _telegramApiClient.SendMessage(TelegramApiBots.BuyBot, openPositionText);
+                    await _telegramApiClient.SendMessage(TelegramApiBots.NoLeverageBuyBot, openPositionText);
                 }
                 catch (Exception ex)
                 {
-                    StaticLogger.LogMessage($"BuyJob BuyBot request {ex.Message}");
+                    StaticLogger.LogMessage($"BuyJob NoLeverageBuyBot request {ex.Message}");
                 }
             }
 
@@ -77,11 +70,11 @@ namespace QuartzScheduler.Jobs
             {
                 try
                 {
-                    await _telegramApiClient.SendMessage(TelegramApiBots.InfoBot, text);
+                    await _telegramApiClient.SendMessage(TelegramApiBots.NoLeverageInfoBot, text);
                 }
                 catch (Exception ex)
                 {
-                    StaticLogger.LogMessage($"BuyJob InfoBot request {ex.Message}");
+                    StaticLogger.LogMessage($"BuyJob NoLeverageInfoBot request {ex.Message}");
                 }
             }
         }
