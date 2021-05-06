@@ -37,8 +37,9 @@ namespace TradingDataLibrary.Implementations
 
                 if (positionsCount == 0 && rsi < 30)
                 {
-                    var rsiPeaksHistoryInt = Array.ConvertAll(rsiPeaksHistory.Split('↑', '↓').Where(x => !string.IsNullOrEmpty(x)).ToArray(), s => int.Parse(s));
-                    var shouldOpen = rsiPeaksHistoryInt.All(x => x <= rsiPeaksCount);
+                    var rsiPeaksHistoryInt = Array.ConvertAll(rsiPeaksHistory.Split('↑', '↓')
+                        .Where(x => !string.IsNullOrEmpty(x)).ToArray(), s => int.Parse(s));
+                    var shouldOpen = rsiPeaksHistoryInt.All(x => x <= rsiPeaksCount) && rsiPeaksHistoryInt.Length >= 5;
 
                     if (shouldOpen)
                     {
