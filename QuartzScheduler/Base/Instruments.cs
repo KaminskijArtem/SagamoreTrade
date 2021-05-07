@@ -37,5 +37,10 @@ namespace QuartzScheduler.Base
             "MOS", "MUR", "NIO", "NRG", "NYCB", "NYT", "NOV", "NKTR", "EDU", "NWL", 
             "NLSN", "NKLA", "NI", "NOAH", "JWN", "NLOK", "NCLH", "NTNX"
         };
+
+        public static List<string> inPositionSymbols = new List<string>
+        {
+            "ICPT"
+        };
     }
 }
