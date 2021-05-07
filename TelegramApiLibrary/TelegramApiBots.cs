@@ -6,6 +6,7 @@
         SellBot,
         BuyBot,
         NoLeverageInfoBot,
-        NoLeverageBuyBot
+        NoLeverageBuyBot,
+        NoLeverageSellBot
     }
 }

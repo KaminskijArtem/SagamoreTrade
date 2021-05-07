@@ -50,7 +50,7 @@ namespace QuartzScheduler.Jobs
                 }
                 catch (Exception ex)
                 {
-                    StaticLogger.LogMessage($"BuyJob {symbol} {ex.Message}");
+                    StaticLogger.LogMessage($"NoLeverageBuyJob {symbol} {ex.Message}");
                 }
             }
 
@@ -62,7 +62,7 @@ namespace QuartzScheduler.Jobs
                 }
                 catch (Exception ex)
                 {
-                    StaticLogger.LogMessage($"BuyJob NoLeverageBuyBot request {ex.Message}");
+                    StaticLogger.LogMessage($"NoLeverageBuyJob NoLeverageBuyBot request {ex.Message}");
                 }
             }
 
@@ -74,7 +74,7 @@ namespace QuartzScheduler.Jobs
                 }
                 catch (Exception ex)
                 {
-                    StaticLogger.LogMessage($"BuyJob NoLeverageInfoBot request {ex.Message}");
+                    StaticLogger.LogMessage($"NoLeverageBuyJob NoLeverageInfoBot request {ex.Message}");
                 }
             }
         }

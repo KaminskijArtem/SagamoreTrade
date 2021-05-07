@@ -52,6 +52,12 @@ namespace TelegramApiLibrary.Implementations
                         counter = StaticCounter.counter5++;
                         break;
                     }
+                case TelegramApiBots.NoLeverageSellBot:
+                    {
+                        botToken = _configuration["TelegramConfiguration:Bot6Token"];
+                        counter = StaticCounter.counter6++;
+                        break;
+                    }
                 default: break;
             }
 
