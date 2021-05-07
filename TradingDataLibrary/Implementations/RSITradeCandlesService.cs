@@ -19,6 +19,11 @@ namespace TradingDataLibrary.Implementations
         public async Task<RSISignalModel> GetRSISignal(string symbol, string interval, int positionsCount)
         {
             var candles = await _candlesApiClient.GetCandles(symbol, interval);
+            var dateDiff = DateTimeOffset.UtcNow - candles.Last().OpenTime;
+
+            if(dateDiff > TimeSpan.FromMinutes(90))
+                return null;
+
             var rsiList = CalculateRSI(candles);
             var rsi = decimal.Round(rsiList.Last().Value, 2);
             var signal = new RSISignalModel();
