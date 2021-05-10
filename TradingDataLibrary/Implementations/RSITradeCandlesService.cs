@@ -26,7 +26,7 @@ namespace TradingDataLibrary.Implementations
 
             var signal = new RSISignalModel();
 
-            if(!inPosition && !((rsi > 50 && rsiPrev < 50) || (rsi < 50 && rsiPrev > 50)))
+            if(!inPosition && !((rsi > 50 && rsi < 55 && rsiPrev < 50) || (rsi < 50 && rsi > 45 && rsiPrev > 50)))
                 return null;
 
             if (inPosition)
