@@ -17,7 +17,7 @@ namespace QuartzScheduler.Jobs
         private readonly ITelegramApiClient _telegramApiClient;
         private readonly IPositionsApiClient _positionsApiClient;
 
-        readonly string interval = "1h";
+        readonly string interval = "30m";
 
         public BuyJob(IRSITradeCandlesService tradeCandlesService,
             ITelegramApiClient telegramApiClient,
@@ -40,7 +40,7 @@ namespace QuartzScheduler.Jobs
             {
                 try
                 {
-                    var signal = await _tradeCandlesService.GetRSISignal(symbol, interval, allPositions.Count(x => x == symbol));
+                    var signal = await _tradeCandlesService.GetRSISignal(symbol, interval, allPositions.Any(x => x == symbol));
                     if (signal != null)
                     {
                         if (text != null)

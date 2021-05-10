@@ -39,7 +39,8 @@ namespace TradingDataLibrary.ApiClient
             var response = await client.SendAsync(request);
             var contents = await response.Content.ReadAsStreamAsync();
             var objPositions = await JsonSerializer.DeserializeAsync<TradingPositionsResult>(contents);
-            objPositions.positions.ForEach(x => x.symbol = x.symbol.Replace("_LEVERAGE", "").Replace(".", ""));
+            if(objPositions.positions != null)
+                objPositions.positions.ForEach(x => x.symbol = x.symbol.Replace("_LEVERAGE", "").Replace(".", ""));
 
             return objPositions.positions;
         }

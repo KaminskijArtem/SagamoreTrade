@@ -27,18 +27,6 @@ namespace QuartzScheduler
                 cronExpression: "0 4,9,14,19,24,29,34,39,44,49,54,59 * * * ?")); // run every 5 minutes
                 //cronExpression: "0,30 * * * * ?")); // run every minute at 0,30s
 
-            services.AddSingleton<NoLeverageSellJob>();
-            services.AddSingleton(new JobSchedule(
-                jobType: typeof(NoLeverageSellJob),
-                cronExpression: "0 4,9,14,19,24,29,34,39,44,49,54,59 * * * ?")); // run every 5 minutes
-                //cronExpression: "0,30 * * * * ?")); // run every minute at 0,30s
-
-            services.AddSingleton<NoLeverageBuyJob>();
-            services.AddSingleton(new JobSchedule(
-                jobType: typeof(NoLeverageBuyJob),
-                cronExpression: "0 9,24,39,54 * * * ?")); // run every 15 minutes
-                //cronExpression: "0 * * * * ?")); // run every minute at 0s
-
             services.AddHostedService<QuartzHostedService>();
         }
     }

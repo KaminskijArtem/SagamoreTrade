@@ -16,78 +16,30 @@ namespace TradingDataLibrary.Implementations
         {
             _candlesApiClient = candlesApiClient;
         }
-        public async Task<RSISignalModel> GetRSISignal(string symbol, string interval, int positionsCount)
+        public async Task<RSISignalModel> GetRSISignal(string symbol, string interval, bool inPosition)
         {
             var candles = await _candlesApiClient.GetCandles(symbol, interval);
-            var dateDiff = DateTimeOffset.UtcNow - candles.Last().OpenTime;
-
-            if(dateDiff > TimeSpan.FromMinutes(90))
-                return null;
 
             var rsiList = CalculateRSI(candles);
             var rsi = decimal.Round(rsiList.Last().Value, 2);
+            var rsiPrev = decimal.Round(rsiList.Take(rsiList.Count() - 1).Last().Value, 2);
+
             var signal = new RSISignalModel();
 
-            if (rsi < 30 || positionsCount > 0)
+            if(!inPosition && !((rsi > 50 && rsiPrev < 50) || (rsi < 50 && rsiPrev > 50)))
+                return null;
+
+            if (inPosition)
+                signal.Text += $"- ";
+
+            if (!inPosition && ((rsi > 50 && rsiPrev < 50) || (rsi < 50 && rsiPrev > 50)))
             {
-                if (positionsCount > 0)
-                    signal.Text += $"- (позиций:{positionsCount}) ";
-
-                var rsiPeaksCount = CalculateRSIPeaksCount(rsiList);
-                if (rsiPeaksCount > 0)
-                    signal.Text += $"(пиков rsi:{rsiPeaksCount}) ";
-
-                var rsiPeaksHistory = GetRSIPeaksHistory(rsiList);
-                signal.Text += $"(история rsi:{rsiPeaksHistory}) ";
-
-                if (positionsCount == 0 && rsi < 30)
-                {
-                    var rsiPeaksHistoryInt = Array.ConvertAll(rsiPeaksHistory.Split('↑', '↓')
-                        .Where(x => !string.IsNullOrEmpty(x)).ToArray(), s => int.Parse(s));
-                    var shouldOpen = rsiPeaksHistoryInt.All(x => x <= rsiPeaksCount) && rsiPeaksHistoryInt.Length >= 5;
-
-                    if (shouldOpen)
-                    {
-                        signal.Text += "%E2%9D%A4";
-                        signal.IsNotify = true;
-                    }
-
-                }
-
-                var rsiPrev = decimal.Round(rsiList.Take(rsiList.Count() - 1).Last().Value, 2);
-                var rsiPrevPrev = decimal.Round(rsiList.Take(rsiList.Count() - 2).Last().Value, 2);
-                signal.Text += $"{rsi}% ({rsiPrev}% {rsiPrevPrev}%)%";
-                return signal;
+                signal.Text += "%E2%9D%A4";
+                signal.IsNotify = true;
             }
 
-            return null;
-        }
-
-        private string GetRSIPeaksHistory(List<decimal?> rsiList)
-        {
-            var result = "";
-            var rsiUp = 0;
-            var rsiDown = 0;
-
-            for (var i = rsiList.Count - 1; rsiList[i] != null; i--)
-            {
-                if (rsiList[i] < 30 && rsiList.Take(i).TakeLast(8).All(x => x > 30))
-                {
-                    if (rsiUp != 0)
-                        result = result.Insert(0, $"{rsiUp}↑");
-                    rsiDown++;
-                    rsiUp = 0;
-                }
-                if (rsiList[i] > 70 && rsiList.Take(i).TakeLast(8).All(x => x < 70))
-                {
-                    if (rsiDown != 0)
-                        result = result.Insert(0, $"{rsiDown}↓");
-                    rsiUp++;
-                    rsiDown = 0;
-                }
-            }
-
-            return result;
+            signal.Text += $"{rsi}%";
+            return signal;
         }
 
         public async Task<InPositionRSISignalModel> GetInPositionRSISignal(string symbol, string interval, Position position)
@@ -96,7 +48,7 @@ namespace TradingDataLibrary.Implementations
             var rsiList = CalculateRSI(candles);
             var rsi = rsiList.Last().Value;
 
-            if (rsi > 70)// && candles.Last().Close > position.openPrice)
+            if (rsi > 50 && !position.IsLong() || rsi < 50 && position.IsLong())
             {
                 var outputModel = new InPositionRSISignalModel
                 {
@@ -105,15 +57,6 @@ namespace TradingDataLibrary.Implementations
                 };
                 return outputModel;
             }
-            //else if (rsi > 70)
-            //{
-            //    var outputModel = new InPositionRSISignalModel
-            //    {
-            //        Text = $"{decimal.Round(rsi, 2)}% может стоит закрыть?",
-            //        ShouldClosePosition = false
-            //    };
-            //    return outputModel;
-            //}
 
             return null;
         }
@@ -170,19 +113,6 @@ namespace TradingDataLibrary.Implementations
             }
 
             return RSI;
-        }
-        private int CalculateRSIPeaksCount(List<decimal?> rsiList)
-        {
-            var result = 0;
-            if (rsiList.Last() < 30)
-            {
-                for (var i = rsiList.Count - 1; rsiList[i] < 70; i--)
-                {
-                    if (rsiList[i] < 30 && rsiList.Take(i).TakeLast(8).All(x => x > 30))
-                        result++;
-                }
-            }
-            return result;
         }
     }
 }

@@ -5,7 +5,7 @@ namespace TradingDataLibrary.Interfaces
 {
     public interface IRSITradeCandlesService
     {
-        Task<RSISignalModel> GetRSISignal(string symbol, string interval, int positionsCount);
+        Task<RSISignalModel> GetRSISignal(string symbol, string interval, bool isInPosition);
         Task<InPositionRSISignalModel> GetInPositionRSISignal(string symbol, string interval, Position position);
     }
 }
