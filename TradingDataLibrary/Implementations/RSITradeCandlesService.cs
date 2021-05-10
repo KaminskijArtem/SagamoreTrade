@@ -32,7 +32,7 @@ namespace TradingDataLibrary.Implementations
             if (inPosition)
                 signal.Text += $"- ";
 
-            if (!inPosition && ((rsi > 50 && rsiPrev < 50) || (rsi < 50 && rsiPrev > 50)))
+            if (!inPosition && ((rsi > 50 && rsi < 55 && rsiPrev < 50) || (rsi < 50 && rsi > 45 && rsiPrev > 50)))
             {
                 signal.Text += "%E2%9D%A4";
                 signal.IsNotify = true;
@@ -48,7 +48,7 @@ namespace TradingDataLibrary.Implementations
             var rsiList = CalculateRSI(candles);
             var rsi = rsiList.Last().Value;
 
-            if (rsi > 50 && !position.IsLong() || rsi < 50 && position.IsLong())
+            if (rsi > 55 && !position.IsLong() || rsi < 45 && position.IsLong())
             {
                 var outputModel = new InPositionRSISignalModel
                 {
