@@ -2,12 +2,14 @@
 using QuartzScheduler.Base;
 using QuartzScheduler.Logging;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using TelegramApiLibrary;
 using TelegramApiLibrary.Interfaces;
 using TradingDataLibrary.ApiClient;
 using TradingDataLibrary.Interfaces;
+using TradingDataLibrary.Models;
 
 namespace QuartzScheduler.Jobs
 {
@@ -29,10 +31,18 @@ namespace QuartzScheduler.Jobs
         }
         public async Task Execute(IJobExecutionContext context)
         {
-            var positions = await _positionsApiClient.GetAllPositions();
+            var positions = new List<Position>();
+            try
+            {
+                positions = await _positionsApiClient.GetAllPositions();
+            }
+            catch (Exception ex)
+            {
+                StaticLogger.LogMessage($"BuyJob take positions {ex.Message}");
+            }
+
             var allPositions = positions.Select(x => x.symbol).ToList();
             var longPositions = positions.Where(x => x.IsLong()).ToList();
-
             string text = null;
             string openPositionText = null;
 

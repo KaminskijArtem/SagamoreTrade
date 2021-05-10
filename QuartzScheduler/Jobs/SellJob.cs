@@ -1,12 +1,13 @@
 ﻿using Quartz;
 using QuartzScheduler.Logging;
 using System;
-using System.Linq;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using TelegramApiLibrary;
 using TelegramApiLibrary.Interfaces;
 using TradingDataLibrary.ApiClient;
 using TradingDataLibrary.Interfaces;
+using TradingDataLibrary.Models;
 
 namespace QuartzScheduler.Jobs
 {
@@ -28,7 +29,15 @@ namespace QuartzScheduler.Jobs
         }
         public async Task Execute(IJobExecutionContext context)
         {
-            var positions = await _positionsApiClient.GetAllPositions();
+            var positions = new List<Position>();
+            try
+            {
+                positions = await _positionsApiClient.GetAllPositions();
+            }
+            catch (Exception ex)
+            {
+                StaticLogger.LogMessage($"SellJob take positions {ex.Message}");
+            }
 
             string text = null;
             foreach (var position in positions)
