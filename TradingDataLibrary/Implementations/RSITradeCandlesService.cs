@@ -23,7 +23,6 @@ namespace TradingDataLibrary.Implementations
 
             var rsiList = CalculateRSI(candles);
             var rsi = decimal.Round(rsiList.Last().Value, 2);
-            var rsiPrev = decimal.Round(rsiList.Take(rsiList.Count() - 1).Last().Value, 2);
 
             var signal = new RSISignalModel();
 
