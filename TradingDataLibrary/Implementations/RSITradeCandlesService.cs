@@ -27,13 +27,13 @@ namespace TradingDataLibrary.Implementations
 
             var signal = new RSISignalModel();
 
-            if (!inPosition && !((rsi > 50 && rsi < 55 && rsiPrev < 50) || (rsi < 50 && rsi > 45 && rsiPrev > 50)))
+            if (!inPosition && !(rsi > 45 && rsi < 55))
                 return null;
 
             if (inPosition)
                 signal.Text += $"- ";
 
-            if (!inPosition && ((rsi > 50 && rsi < 55 && rsiPrev < 50) || (rsi < 50 && rsi > 45 && rsiPrev > 50)))
+            if (!inPosition && rsi > 45 && rsi < 55)
             {
                 var sar = new SAR(0.02, 0.2);
                 var ohlcList = candles.Select(x =>
@@ -47,7 +47,6 @@ namespace TradingDataLibrary.Implementations
                     Date = x.OpenTime.UtcDateTime
 
                 }).ToList();
-                // fill ohlcList
                 sar.Load(ohlcList);
                 var serie = sar.Calculate();
                 var lastSar = serie.Values.Last();
