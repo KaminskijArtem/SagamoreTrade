@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NetTrader.Indicator;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -34,8 +35,29 @@ namespace TradingDataLibrary.Implementations
 
             if (!inPosition && ((rsi > 50 && rsi < 55 && rsiPrev < 50) || (rsi < 50 && rsi > 45 && rsiPrev > 50)))
             {
-                signal.Text += "%E2%9D%A4";
-                signal.IsNotify = true;
+                var sar = new SAR(0.02, 0.2);
+                var ohlcList = candles.Select(x =>
+                new Ohlc
+                {
+                    Open = (double)x.Open,
+                    Close = (double)x.Close,
+                    High = (double)x.High,
+                    Low = (double)x.Low,
+                    Volume = x.Volume,
+                    Date = x.OpenTime.UtcDateTime
+
+                }).ToList();
+                // fill ohlcList
+                sar.Load(ohlcList);
+                var serie = sar.Calculate();
+                var lastSar = serie.Values.Last();
+                var lastCandle = candles.Last();
+
+                if ((rsi > 50 && lastSar < (double)lastCandle.Close) || (rsi < 50 && lastSar > (double)lastCandle.Close))
+                {
+                    signal.Text += "%E2%9D%A4";
+                    signal.IsNotify = true;
+                }
             }
 
             signal.Text += $"{rsi}%";
