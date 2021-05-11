@@ -10,7 +10,7 @@ namespace QuartzScheduler.Base
             "LTC/USD", "BCH/USD",
             "ETH/BTC",
             "US500", "US30", "US100",
-            "Gold", "Silver",
+            "Gold"
         };
     }
 }
