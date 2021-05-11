@@ -49,9 +49,12 @@ namespace TradingDataLibrary.Implementations
                 sar.Load(ohlcList);
                 var serie = sar.Calculate();
                 var lastSar = serie.Values.Last();
+                var prevSar = serie.Values.Take(serie.Values.Count() - 1).Last().Value;
                 var lastCandle = candles.Last();
+                var prevCandle = candles.Take(candles.Count() - 1).Last();
 
-                if ((rsi > 50 && lastSar < (double)lastCandle.Close) || (rsi < 50 && lastSar > (double)lastCandle.Close))
+                if ((rsi > 50 && lastSar < (double)lastCandle.Close && prevSar < (double)prevCandle.Close) ||
+                    (rsi < 50 && lastSar > (double)lastCandle.Close && prevSar > (double)prevCandle.Close))
                 {
                     signal.Text += "%E2%9D%A4";
                     signal.IsNotify = true;
