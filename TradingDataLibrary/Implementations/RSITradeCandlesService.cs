@@ -26,7 +26,7 @@ namespace TradingDataLibrary.Implementations
 
             var signal = new RSISignalModel();
 
-            if(!inPosition && !((rsi > 50 && rsi < 55 && rsiPrev < 50) || (rsi < 50 && rsi > 45 && rsiPrev > 50)))
+            if (!inPosition && !((rsi > 50 && rsi < 55 && rsiPrev < 50) || (rsi < 50 && rsi > 45 && rsiPrev > 50)))
                 return null;
 
             if (inPosition)
@@ -48,7 +48,7 @@ namespace TradingDataLibrary.Implementations
             var rsiList = CalculateRSI(candles);
             var rsi = rsiList.Last().Value;
 
-            if (rsi > 55 && !position.IsLong() || rsi < 45 && position.IsLong())
+            if ((rsi > 55 || rsi < 30) && !position.IsLong() || (rsi < 45 || rsi > 70) && position.IsLong())
             {
                 var outputModel = new InPositionRSISignalModel
                 {
