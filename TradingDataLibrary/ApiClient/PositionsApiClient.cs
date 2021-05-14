@@ -37,6 +37,10 @@ namespace TradingDataLibrary.ApiClient
             request.Headers.Add("X-MBX-APIKEY", key);
 
             var response = await client.SendAsync(request);
+
+            if(!response.IsSuccessStatusCode)
+                throw new Exception(response.ReasonPhrase);
+
             var contents = await response.Content.ReadAsStreamAsync();
             var objPositions = await JsonSerializer.DeserializeAsync<TradingPositionsResult>(contents);
             if(objPositions.positions != null)
