@@ -37,6 +37,7 @@ namespace QuartzScheduler.Jobs
             catch (Exception ex)
             {
                 StaticLogger.LogMessage($"SellJob take positions {ex.Message}");
+                throw;
             }
 
             string text = null;

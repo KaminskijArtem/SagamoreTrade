@@ -39,6 +39,7 @@ namespace QuartzScheduler.Jobs
             catch (Exception ex)
             {
                 StaticLogger.LogMessage($"BuyJob take positions {ex.Message}");
+                throw;
             }
 
             var allPositions = positions.Select(x => x.symbol).ToList();
