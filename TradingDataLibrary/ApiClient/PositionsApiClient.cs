@@ -78,5 +78,10 @@ namespace TradingDataLibrary.ApiClient
             var response = await client.SendAsync(request);
             return response.IsSuccessStatusCode;
         }
+
+        public async Task<bool> OpenPosition(Instrument instrument, bool isLong)
+        {
+            return false;
+        }
     }
 }

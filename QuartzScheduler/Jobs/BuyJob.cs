@@ -1,5 +1,4 @@
 ﻿using Quartz;
-using QuartzScheduler.Base;
 using QuartzScheduler.Logging;
 using System;
 using System.Collections.Generic;
@@ -64,10 +63,22 @@ namespace QuartzScheduler.Jobs
 
                         if (signal.IsNotify)
                         {
-                            if(signal.IsLong)
-                                openPositionText += $"{instrument.Symbol} пора открывать long";
+                            if (signal.IsLong)
+                            {
+                                var result = await _positionsApiClient.OpenPosition(instrument, true);
+                                if (result)
+                                    openPositionText += $"{instrument.Symbol} открыта long";
+                                else
+                                    openPositionText += $"{instrument.Symbol} пора открывать long";
+                            }
                             else
-                                openPositionText += $"{instrument.Symbol} пора открывать short";
+                            {
+                                var result = await _positionsApiClient.OpenPosition(instrument, false);
+                                if (result)
+                                    openPositionText += $"{instrument.Symbol} открыта short";
+                                else
+                                    openPositionText += $"{instrument.Symbol} пора открывать short";
+                            }
                         }
                     }
                 }
