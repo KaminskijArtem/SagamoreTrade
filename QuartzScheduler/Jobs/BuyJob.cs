@@ -63,7 +63,12 @@ namespace QuartzScheduler.Jobs
                             openPositionText += "\n";
 
                         if (signal.IsNotify)
-                            openPositionText += $"{symbol} пора открывать";
+                        {
+                            if(signal.IsLong)
+                                openPositionText += $"{symbol} пора открывать long";
+                            else
+                                openPositionText += $"{symbol} пора открывать short";
+                        }
                     }
                 }
                 catch (Exception ex)

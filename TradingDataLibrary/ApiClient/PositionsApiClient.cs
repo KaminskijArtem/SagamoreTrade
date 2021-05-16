@@ -39,7 +39,7 @@ namespace TradingDataLibrary.ApiClient
             var response = await client.SendAsync(request);
 
             if(!response.IsSuccessStatusCode)
-                throw new Exception($"{response.StatusCode} {response.RequestMessage}");
+                throw new Exception($"{response.StatusCode}");
 
             var contents = await response.Content.ReadAsStreamAsync();
             var objPositions = await JsonSerializer.DeserializeAsync<TradingPositionsResult>(contents);

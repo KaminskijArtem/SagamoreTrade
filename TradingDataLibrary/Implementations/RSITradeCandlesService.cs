@@ -53,11 +53,17 @@ namespace TradingDataLibrary.Implementations
                 var lastCandle = candles.Last();
                 var prevCandle = candles.Take(candles.Count() - 1).Last();
 
-                if ((rsi > 50 && lastSar < (double)lastCandle.Close && prevSar < (double)prevCandle.Close) ||
-                    (rsi < 50 && lastSar > (double)lastCandle.Close && prevSar > (double)prevCandle.Close))
+                if (rsi > 50 && lastSar < (double)lastCandle.Close && prevSar < (double)prevCandle.Close)
                 {
                     signal.Text += "%E2%9D%A4";
                     signal.IsNotify = true;
+                    signal.IsLong = true;
+                }
+                if (rsi < 50 && lastSar > (double)lastCandle.Close && prevSar > (double)prevCandle.Close)
+                {
+                    signal.Text += "%E2%9D%A4";
+                    signal.IsNotify = true;
+                    signal.IsLong = false;
                 }
             }
 
