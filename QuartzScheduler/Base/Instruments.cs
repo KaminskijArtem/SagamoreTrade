@@ -4,13 +4,49 @@ namespace QuartzScheduler.Base
 {
     public class GlobalValues
     {
-        public static List<string> symbols = new List<string>
+        public static List<Instrument> instruments = new List<Instrument>
         {
-            "BTC/USD", "ETH/USD",
-            "LTC/USD", "BCH/USD",
-            "ETH/BTC",
-            "US500", "US30", "US100",
-            "Gold"
+            new Instrument
+            {
+                Symbol = "BTC/USD"
+            },
+            new Instrument
+            {
+                Symbol = "ETH/USD"
+            },
+            new Instrument
+            {
+                Symbol = "LTC/USD"
+            },
+            new Instrument
+            {
+                Symbol = "BCH/USD"
+            },
+            new Instrument
+            {
+                Symbol = "ETH/BTC"
+            },
+            new Instrument
+            {
+                Symbol = "US500"
+            },
+            new Instrument
+            {
+                Symbol = "US30"
+            },
+            new Instrument
+            {
+                Symbol = "US100"
+            },
+            new Instrument
+            {
+                Symbol = "Gold"
+            }
         };
+    }
+
+    public class Instrument
+    {
+        public string Symbol { get; set; }
     }
 }

@@ -47,17 +47,17 @@ namespace QuartzScheduler.Jobs
             string text = null;
             string openPositionText = null;
 
-            foreach (var symbol in GlobalValues.symbols)
+            foreach (var instrument in GlobalValues.instruments)
             {
                 try
                 {
-                    var signal = await _tradeCandlesService.GetRSISignal(symbol, interval, allPositions.Any(x => x == symbol));
+                    var signal = await _tradeCandlesService.GetRSISignal(instrument.Symbol, interval, allPositions.Any(x => x == instrument.Symbol));
                     if (signal != null)
                     {
                         if (text != null)
                             text += "\n";
 
-                        text += $"{symbol} {signal.Text}";
+                        text += $"{instrument.Symbol} {signal.Text}";
 
                         if (openPositionText != null && signal.IsNotify)
                             openPositionText += "\n";
@@ -65,15 +65,15 @@ namespace QuartzScheduler.Jobs
                         if (signal.IsNotify)
                         {
                             if(signal.IsLong)
-                                openPositionText += $"{symbol} пора открывать long";
+                                openPositionText += $"{instrument.Symbol} пора открывать long";
                             else
-                                openPositionText += $"{symbol} пора открывать short";
+                                openPositionText += $"{instrument.Symbol} пора открывать short";
                         }
                     }
                 }
                 catch (Exception ex)
                 {
-                    StaticLogger.LogMessage($"BuyJob {symbol} {ex.Message}");
+                    StaticLogger.LogMessage($"BuyJob {instrument.Symbol} {ex.Message}");
                 }
             }
 
