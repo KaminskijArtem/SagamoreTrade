@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 using TradingDataLibrary.Models;
 
@@ -13,6 +14,8 @@ namespace TradingDataLibrary.ApiClient
 
         public async Task<List<Candle>> GetCandles(string symbol, string interval)
         {
+            Thread.Sleep(500);
+
             var streamTask = client.GetStreamAsync(
                 $"https://api-adapter.backend.currency.com/api/v1/klines?symbol={symbol}&interval={interval}&limit=1000");
             var output = new List<Candle>();
