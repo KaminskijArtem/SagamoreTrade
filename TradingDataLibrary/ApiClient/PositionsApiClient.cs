@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
@@ -39,7 +39,7 @@ namespace TradingDataLibrary.ApiClient
             var response = await client.SendAsync(request);
 
             if(!response.IsSuccessStatusCode)
-                throw new Exception($"{response.StatusCode}");
+                throw new Exception($"{response.StatusCode} {await response.Content.ReadAsStringAsync()}");
 
             var contents = await response.Content.ReadAsStreamAsync();
             var objPositions = await JsonSerializer.DeserializeAsync<TradingPositionsResult>(contents);
