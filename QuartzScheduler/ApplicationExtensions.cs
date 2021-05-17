@@ -24,8 +24,8 @@ namespace QuartzScheduler
             services.AddSingleton<SellJob>();
             services.AddSingleton(new JobSchedule(
                 jobType: typeof(SellJob),
-                cronExpression: "0 4,9,14,19,24,29,34,39,44,49,54,59 * * * ?")); // run every 5 minutes
-                //cronExpression: "0,30 * * * * ?")); // run every minute at 0,30s
+                cronExpression: "10 4,9,14,19,24,29,34,39,44,49,54,59 * * * ?")); // run every 5 minutes
+                //cronExpression: "5,35 * * * * ?")); // run every minute at 0,30s
 
             services.AddHostedService<QuartzHostedService>();
         }
