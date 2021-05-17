@@ -16,7 +16,7 @@ namespace TradingDataLibrary.Implementations
         {
             _candlesApiClient = candlesApiClient;
         }
-        public async Task<RSISignalModel> GetRSISignal(string symbol, string interval, bool inPosition)
+        public async Task<RSISignalModel> GetRSISignal(string symbol, string interval, Position position)
         {
             var candles = await _candlesApiClient.GetCandles(symbol, interval);
 
@@ -25,13 +25,16 @@ namespace TradingDataLibrary.Implementations
 
             var signal = new RSISignalModel();
 
-            if (!inPosition && !(rsi > 45 && rsi < 55))
+            if (position == null && !(rsi > 45 && rsi < 55))
                 return null;
 
-            if (inPosition)
-                signal.Text += $"- ";
+            if (position != null && position.IsLong())
+                signal.Text += $"long ";
 
-            if (!inPosition && rsi > 45 && rsi < 55)
+            if (position != null && !position.IsLong())
+                signal.Text += $"short ";
+
+            if (position == null && rsi > 45 && rsi < 55)
             {
                 var sar = new SAR(0.02, 0.2);
                 var ohlcList = candles.Select(x =>
