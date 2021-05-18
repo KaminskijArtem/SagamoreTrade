@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 using QuartzScheduler.Base;
 using Quartz;
 using Quartz.Impl;
@@ -18,7 +18,7 @@ namespace QuartzScheduler
             services.AddSingleton<BuyJob>();
             services.AddSingleton(new JobSchedule(
                 jobType: typeof(BuyJob),
-                cronExpression: "10 4,9,14,19,24,29,34,39,44,49,54,59 * * * ?")); // run every 5 minutes
+                cronExpression: "20 4,9,14,19,24,29,34,39,44,49,54,59 * * * ?")); // run every 5 minutes
                 //cronExpression: "0 * * * * ?")); // run every minute at 0,30s
 
             services.AddSingleton<SellJob>();
