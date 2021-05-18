@@ -63,11 +63,6 @@ namespace QuartzScheduler.Jobs
 
                         if (signal.IsNotify)
                         {
-                            //double-check
-                            var allPositions2 = await _positionsApiClient.GetAllPositions();
-                            if (allPositions2.Any(x => x.symbol == instrument.Symbol))
-                                continue;
-
                             if (signal.IsLong)
                             {
                                 var result = await _positionsApiClient.OpenPosition(instrument, true);
