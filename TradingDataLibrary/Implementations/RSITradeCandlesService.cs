@@ -55,17 +55,25 @@ namespace TradingDataLibrary.Implementations
                 var lastCandle = candles.Last();
                 var prevCandle = candles.Take(candles.Count() - 1).Last();
 
-                if (rsi > 50 && lastSar < (double)lastCandle.Close && prevSar < (double)prevCandle.Close)
+                var ADX = new ADX(14);
+                ADX.Load(ohlcList);
+                var adxSerie = ADX.Calculate();
+                var lastADX = adxSerie.ADX.Last();
+
+                if (lastADX > 25)
                 {
-                    signal.Text += "%E2%9D%A4";
-                    signal.IsNotify = true;
-                    signal.IsLong = true;
-                }
-                if (rsi < 50 && lastSar > (double)lastCandle.Close && prevSar > (double)prevCandle.Close)
-                {
-                    signal.Text += "%E2%9D%A4";
-                    signal.IsNotify = true;
-                    signal.IsLong = false;
+                    if (rsi > 50 && lastSar < (double)lastCandle.Close && prevSar < (double)prevCandle.Close)
+                    {
+                        signal.Text += "%E2%9D%A4";
+                        signal.IsNotify = true;
+                        signal.IsLong = true;
+                    }
+                    if (rsi < 50 && lastSar > (double)lastCandle.Close && prevSar > (double)prevCandle.Close)
+                    {
+                        signal.Text += "%E2%9D%A4";
+                        signal.IsNotify = true;
+                        signal.IsLong = false;
+                    }
                 }
             }
 
