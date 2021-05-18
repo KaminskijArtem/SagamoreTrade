@@ -37,7 +37,7 @@ namespace TradingDataLibrary.Models
             new Instrument
             {
                 Symbol = "ETH/BTC",
-                OpenPositionSymbol = "ETH%2FUSD_LEVERAGE",
+                OpenPositionSymbol = "ETH%2FBTC_LEVERAGE",
                 Margin = 5,
                 PositionSize = 0.03
             },
