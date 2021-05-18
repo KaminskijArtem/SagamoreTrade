@@ -66,8 +66,8 @@ namespace TradingDataLibrary.Models
             {
                 Symbol = "Gold",
                 OpenPositionSymbol = "Gold.",
-                Margin = 25,
-                PositionSize = 0.3
+                Margin = 10,
+                PositionSize = 0.1
             }
         };
     }
