@@ -81,6 +81,8 @@ namespace TradingDataLibrary.ApiClient
 
         public async Task<bool> OpenPosition(Instrument instrument, bool isLong)
         {
+            return false;
+
             var client = new HttpClient();
             var time = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
             var side = isLong ? "BUY" : "SELL";
