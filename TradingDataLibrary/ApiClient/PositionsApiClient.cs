@@ -81,25 +81,23 @@ namespace TradingDataLibrary.ApiClient
 
         public async Task<bool> OpenPosition(Instrument instrument, bool isLong)
         {
-            //var client = new HttpClient();
-            //var time = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
-            //var side = isLong ? "BUY" : "SELL";
+            var client = new HttpClient();
+            var time = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+            var side = isLong ? "BUY" : "SELL";
 
-            //var queryString = $"timestamp={time}&symbol={instrument.OpenPositionSymbol}&side={side}&type=MARKET&quantity={instrument.PositionSize}&leverage={instrument.Margin}&accountId=5229702511416516";
-            //var sign = CreateSignature(queryString, secretKey);
-            //var request = new HttpRequestMessage()
-            //{
-            //    RequestUri =
-            //    new Uri($"https://api-adapter.backend.currency.com/api/v1/order?{queryString}&signature={sign}"),
-            //    Method = HttpMethod.Post,
-            //};
-            //request.Headers.Add("X-MBX-APIKEY", key);
+            var queryString = $"timestamp={time}&symbol={instrument.OpenPositionSymbol}&side={side}&type=MARKET&quantity={instrument.PositionSize}&leverage={instrument.Margin}&accountId=5229702511416516";
+            var sign = CreateSignature(queryString, secretKey);
+            var request = new HttpRequestMessage()
+            {
+                RequestUri =
+                new Uri($"https://api-adapter.backend.currency.com/api/v1/order?{queryString}&signature={sign}"),
+                Method = HttpMethod.Post,
+            };
+            request.Headers.Add("X-MBX-APIKEY", key);
 
-            //var response = await client.SendAsync(request);
+            var response = await client.SendAsync(request);
 
-            //return response.IsSuccessStatusCode;
-
-            return false;
+            return response.IsSuccessStatusCode;
         }
     }
 }
