@@ -10,36 +10,36 @@ namespace TradingDataLibrary.Models
             {
                 Symbol = "BTC/USD",
                 OpenPositionSymbol = "BTC%2FUSD_LEVERAGE",
-                Margin = 5,
-                PositionSize = 0.002
+                Margin = 2,
+                PositionSize = 0.001
             },
             new Instrument
             {
                 Symbol = "ETH/USD",
                 OpenPositionSymbol = "ETH%2FUSD_LEVERAGE",
-                Margin = 5,
-                PositionSize = 0.03
+                Margin = 2,
+                PositionSize = 0.01
             },
             new Instrument
             {
                 Symbol = "LTC/USD",
                 OpenPositionSymbol = "LTC%2FUSD_LEVERAGE",
-                Margin = 5,
-                PositionSize = 0.35
+                Margin = 2,
+                PositionSize = 0.13
             },
             new Instrument
             {
                 Symbol = "BCH/USD",
                 OpenPositionSymbol = "BCH%2FUSD_LEVERAGE",
-                Margin = 5,
-                PositionSize = 0.09
+                Margin = 2,
+                PositionSize = 0.04
             },
             new Instrument
             {
                 Symbol = "ETH/BTC",
                 OpenPositionSymbol = "ETH%2FBTC_LEVERAGE",
-                Margin = 5,
-                PositionSize = 0.03
+                Margin = 2,
+                PositionSize = 0.01
             },
             new Instrument
             {
