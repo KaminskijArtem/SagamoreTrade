@@ -39,12 +39,19 @@ namespace TradingDataLibrary.ApiClient
             var response = await client.SendAsync(request);
 
             if(!response.IsSuccessStatusCode)
-                throw new Exception($"{response.StatusCode} {await response.Content.ReadAsStringAsync()}");
+            {
+                if(InMemoryPositions.Positions == null)
+                    throw new Exception($"{response.StatusCode} {await response.Content.ReadAsStringAsync()}");
+                else
+                    return InMemoryPositions.Positions;
+            }
 
             var contents = await response.Content.ReadAsStreamAsync();
             var objPositions = await JsonSerializer.DeserializeAsync<TradingPositionsResult>(contents);
             if(objPositions.positions != null)
                 objPositions.positions.ForEach(x => x.symbol = x.symbol.Replace("_LEVERAGE", "").Replace(".", ""));
+
+            InMemoryPositions.Positions = objPositions.positions;
 
             return objPositions.positions;
         }
