@@ -41,9 +41,6 @@ namespace QuartzScheduler.Jobs
                 throw;
             }
 
-            if(positions.IsInMemory)
-                return;
-
             var allPositions = positions.PositionsList.Select(x => x.symbol).ToList();
             var longPositions = positions.PositionsList.Where(x => x.IsLong()).ToList();
             string text = null;
@@ -64,7 +61,7 @@ namespace QuartzScheduler.Jobs
                         if (openPositionText != null && signal.IsNotify)
                             openPositionText += "\n";
 
-                        if (signal.IsNotify)
+                        if (signal.IsNotify && !positions.IsInMemory)
                         {
                             if (signal.IsLong)
                             {
