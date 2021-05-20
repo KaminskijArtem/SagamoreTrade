@@ -29,7 +29,7 @@ namespace QuartzScheduler.Jobs
         }
         public async Task Execute(IJobExecutionContext context)
         {
-            List<Position> positions;
+            Positions positions;
             try
             {
                 positions = await _positionsApiClient.GetAllPositions();
@@ -41,7 +41,7 @@ namespace QuartzScheduler.Jobs
             }
 
             string text = null;
-            foreach (var position in positions)
+            foreach (var position in positions.PositionsList)
             {
                 try
                 {

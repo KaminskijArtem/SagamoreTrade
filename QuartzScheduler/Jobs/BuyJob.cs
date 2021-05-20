@@ -30,7 +30,7 @@ namespace QuartzScheduler.Jobs
         }
         public async Task Execute(IJobExecutionContext context)
         {
-            var positions = new List<Position>();
+            var positions = new Positions();
             try
             {
                 positions = await _positionsApiClient.GetAllPositions();
@@ -41,8 +41,11 @@ namespace QuartzScheduler.Jobs
                 throw;
             }
 
-            var allPositions = positions.Select(x => x.symbol).ToList();
-            var longPositions = positions.Where(x => x.IsLong()).ToList();
+            if(positions.IsInMemory)
+                return;
+
+            var allPositions = positions.PositionsList.Select(x => x.symbol).ToList();
+            var longPositions = positions.PositionsList.Where(x => x.IsLong()).ToList();
             string text = null;
             string openPositionText = null;
 
@@ -50,7 +53,7 @@ namespace QuartzScheduler.Jobs
             {
                 try
                 {
-                    var signal = await _tradeCandlesService.GetRSISignal(instrument.Symbol, interval, positions.FirstOrDefault(x => x.symbol == instrument.Symbol));
+                    var signal = await _tradeCandlesService.GetRSISignal(instrument.Symbol, interval, positions.PositionsList.FirstOrDefault(x => x.symbol == instrument.Symbol));
                     if (signal != null)
                     {
                         if (text != null)

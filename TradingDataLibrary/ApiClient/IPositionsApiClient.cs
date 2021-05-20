@@ -7,7 +7,7 @@ namespace TradingDataLibrary.ApiClient
 {
     public interface IPositionsApiClient
     {
-        Task<List<Position>> GetAllPositions();
+        Task<Positions> GetAllPositions();
         Task<bool> ClosePosition(Guid id);
         Task<bool> OpenPosition(Instrument instrument, bool isLong);
     }

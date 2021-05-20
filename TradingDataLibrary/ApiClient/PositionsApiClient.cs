@@ -23,7 +23,7 @@ namespace TradingDataLibrary.ApiClient
             key = _configuration["ApiConfiguration:Key"];
             secretKey = _configuration["ApiConfiguration:SecretKey"];
         }
-        public async Task<List<Position>> GetAllPositions()
+        public async Task<Positions> GetAllPositions()
         {
             var client = new HttpClient();
             var time = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
@@ -43,7 +43,7 @@ namespace TradingDataLibrary.ApiClient
                 if(InMemoryPositions.Positions == null)
                     throw new Exception($"{response.StatusCode} {await response.Content.ReadAsStringAsync()}");
                 else
-                    return InMemoryPositions.Positions;
+                    return new Positions { PositionsList = InMemoryPositions.Positions, IsInMemory = true };
             }
 
             var contents = await response.Content.ReadAsStreamAsync();
@@ -53,7 +53,7 @@ namespace TradingDataLibrary.ApiClient
 
             InMemoryPositions.Positions = objPositions.positions;
 
-            return objPositions.positions;
+            return new Positions { PositionsList = objPositions.positions, IsInMemory = false };
         }
 
         private string CreateSignature(string queryString, string secret)
