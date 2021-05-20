@@ -36,7 +36,6 @@ namespace TradingDataLibrary.Implementations
 
             if (position == null && rsi > 45 && rsi < 55)
             {
-                var sar = new SAR(0.02, 0.2);
                 var ohlcList = candles.Select(x =>
                 new Ohlc
                 {
