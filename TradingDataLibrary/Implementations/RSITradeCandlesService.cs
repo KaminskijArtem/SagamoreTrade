@@ -57,7 +57,7 @@ namespace TradingDataLibrary.Implementations
                 var MACD = new MACD(12, 26, 9);
                 MACD.Load(ohlcList);
                 var macdSerie = MACD.Calculate();
-                var lastMACDSignal = macdSerie.Signal.Last();
+                var lastMACDSignal = macdSerie.MACDHistogram.Last();
 
                 if (lastADX > 25)
                 {
