@@ -1,5 +1,5 @@
 ﻿using Quartz;
-using QuartzScheduler.Logging;
+using TradingDataLibrary.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace QuartzScheduler.Logging
+namespace TradingDataLibrary.Logging
 {
     public class StaticLogger
     {

@@ -1,12 +1,11 @@
 ﻿using Quartz;
-using QuartzScheduler.Logging;
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using TelegramApiLibrary;
 using TelegramApiLibrary.Interfaces;
 using TradingDataLibrary.ApiClient;
 using TradingDataLibrary.Interfaces;
+using TradingDataLibrary.Logging;
 using TradingDataLibrary.Models;
 
 namespace QuartzScheduler.Jobs

@@ -6,6 +6,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+using TradingDataLibrary.Logging;
 using TradingDataLibrary.Models;
 
 namespace TradingDataLibrary.ApiClient
@@ -43,7 +44,10 @@ namespace TradingDataLibrary.ApiClient
                 if(InMemoryPositions.Positions == null)
                     throw new Exception($"{response.StatusCode} {await response.Content.ReadAsStringAsync()}");
                 else
+                {
+                    StaticLogger.LogMessage($"GetAllPositions {response.StatusCode} {await response.Content.ReadAsStringAsync()}");
                     return new Positions { PositionsList = InMemoryPositions.Positions, IsInMemory = true };
+                }
             }
 
             var contents = await response.Content.ReadAsStreamAsync();
