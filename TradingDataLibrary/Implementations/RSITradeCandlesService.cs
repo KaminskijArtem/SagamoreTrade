@@ -59,7 +59,7 @@ namespace TradingDataLibrary.Implementations
                 var macdSerie = MACD.Calculate();
                 var lastMACDSignal = macdSerie.Signal.Last();
 
-                if(true)//if (lastADX > 25)
+                if (lastADX > 25)
                 {
                     if (rsi > 50 && lastMACDSignal > 0)
                     {
