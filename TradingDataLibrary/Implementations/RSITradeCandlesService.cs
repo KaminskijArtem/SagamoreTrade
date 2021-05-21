@@ -25,7 +25,7 @@ namespace TradingDataLibrary.Implementations
 
             var signal = new RSISignalModel();
 
-            if (position == null && !(rsi > 45 && rsi < 55))
+            if (position == null && !(rsi > 52 && rsi < 48))
                 return null;
 
             if (position != null && position.IsLong())
@@ -34,44 +34,22 @@ namespace TradingDataLibrary.Implementations
             if (position != null && !position.IsLong())
                 signal.Text += $"short ";
 
-            if (position == null && rsi > 45 && rsi < 55)
+            if (position == null && rsi > 48 && rsi < 52)
             {
-                var ohlcList = candles.Select(x =>
-                new Ohlc
+                var lastHighRsiIndex = rsiList.FindLastIndex(x => x.Value > 65);
+                var lastLowRsiIndex = rsiList.FindLastIndex(x => x.Value < 35);
+
+                if (lastLowRsiIndex > lastHighRsiIndex)
                 {
-                    Open = (double)x.Open,
-                    Close = (double)x.Close,
-                    High = (double)x.High,
-                    Low = (double)x.Low,
-                    Volume = x.Volume,
-                    Date = x.OpenTime.UtcDateTime
-
-                }).ToList();
-
-                var ADX = new ADX(14);
-                ADX.Load(ohlcList);
-                var adxSerie = ADX.Calculate();
-                var lastADX = adxSerie.ADX.Last();
-
-                var MACD = new MACD(12, 26, 9);
-                MACD.Load(ohlcList);
-                var macdSerie = MACD.Calculate();
-                var lastMACDSignal = macdSerie.MACDHistogram.Last();
-
-                if (lastADX > 20)
+                    signal.Text += "%E2%9D%A4";
+                    signal.IsNotify = true;
+                    signal.IsLong = true;
+                }
+                if (lastLowRsiIndex < lastHighRsiIndex)
                 {
-                    if (rsi > 50 && lastMACDSignal > 0)
-                    {
-                        signal.Text += "%E2%9D%A4";
-                        signal.IsNotify = true;
-                        signal.IsLong = true;
-                    }
-                    if (rsi < 50 && lastMACDSignal < 0)
-                    {
-                        signal.Text += "%E2%9D%A4";
-                        signal.IsNotify = true;
-                        signal.IsLong = false;
-                    }
+                    signal.Text += "%E2%9D%A4";
+                    signal.IsNotify = true;
+                    signal.IsLong = false;
                 }
             }
 
@@ -85,7 +63,7 @@ namespace TradingDataLibrary.Implementations
             var rsiList = CalculateRSI(candles);
             var rsi = rsiList.Last().Value;
 
-            if ((rsi > 55 || rsi < 40) && !position.IsLong() || (rsi < 45 || rsi > 60) && position.IsLong())
+            if (rsi > 65 || rsi < 35)
             {
                 var outputModel = new InPositionRSISignalModel
                 {
