@@ -42,14 +42,14 @@ namespace TradingDataLibrary.Implementations
                 if (lastLowRsiIndex > lastHighRsiIndex)
                 {
                     signal.Text += "%E2%9D%A4";
-                    signal.IsNotify = false;
-                    signal.IsLong = true;
+                    signal.IsNotify = true;
+                    signal.IsLong = false;
                 }
                 if (lastLowRsiIndex < lastHighRsiIndex)
                 {
                     signal.Text += "%E2%9D%A4";
-                    signal.IsNotify = false;
-                    signal.IsLong = false;
+                    signal.IsNotify = true;
+                    signal.IsLong = true;
                 }
             }
 
