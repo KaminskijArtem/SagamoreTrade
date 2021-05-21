@@ -25,7 +25,7 @@ namespace TradingDataLibrary.Implementations
 
             var signal = new RSISignalModel();
 
-            if (position == null && !(rsi > 52 && rsi < 48))
+            if (position == null && !(rsi > 48 && rsi < 52))
                 return null;
 
             if (position != null && position.IsLong())
