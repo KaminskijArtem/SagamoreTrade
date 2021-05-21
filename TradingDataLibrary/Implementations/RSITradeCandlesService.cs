@@ -1,4 +1,4 @@
-﻿using NetTrader.Indicator;
+using NetTrader.Indicator;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -42,13 +42,13 @@ namespace TradingDataLibrary.Implementations
                 if (lastLowRsiIndex > lastHighRsiIndex)
                 {
                     signal.Text += "%E2%9D%A4";
-                    signal.IsNotify = true;
+                    signal.IsNotify = false;
                     signal.IsLong = true;
                 }
                 if (lastLowRsiIndex < lastHighRsiIndex)
                 {
                     signal.Text += "%E2%9D%A4";
-                    signal.IsNotify = true;
+                    signal.IsNotify = false;
                     signal.IsLong = false;
                 }
             }
