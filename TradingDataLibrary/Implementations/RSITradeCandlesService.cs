@@ -36,25 +36,91 @@ namespace TradingDataLibrary.Implementations
 
             if (position == null && rsi > 48 && rsi < 52)
             {
-                var lastHighRsiIndex = rsiList.FindLastIndex(x => x.Value > 65);
-                var lastLowRsiIndex = rsiList.FindLastIndex(x => x.Value < 35);
+                var lastHighRsiIndex = rsiList.FindLastIndex(x => x.Value > 70);
+                var lastLowRsiIndex = rsiList.FindLastIndex(x => x.Value < 30);
 
-                if (lastLowRsiIndex > lastHighRsiIndex)
+                var rsiPeaks = CalculateRSIPeaks(rsiList);
+
+                var goodDealsIfOpositeTrend = rsiPeaks.Count(x => x == 1);
+                var goodDealsIfWithTrend = rsiPeaks.Where(x => x > 2).Sum(x => x - 2);
+
+                var isShouldOpen = goodDealsIfWithTrend != goodDealsIfOpositeTrend;
+                var isOpenWithTrend = goodDealsIfWithTrend > goodDealsIfOpositeTrend;
+
+                if (isShouldOpen)
                 {
                     signal.Text += "%E2%9D%A4";
                     signal.IsNotify = true;
-                    signal.IsLong = false;
-                }
-                if (lastLowRsiIndex < lastHighRsiIndex)
-                {
-                    signal.Text += "%E2%9D%A4";
-                    signal.IsNotify = true;
-                    signal.IsLong = true;
+                    signal.IsLong = lastLowRsiIndex < lastHighRsiIndex && isOpenWithTrend;
                 }
             }
 
             signal.Text += $"{rsi}%";
             return signal;
+        }
+
+        private List<int> CalculateRSIPeaks(List<decimal?> rsiList)
+        {
+            var result = new List<int>();
+            var topRsiCount = 0;
+            var lowRsiCount = 0;
+
+            for (var i = 0; i < rsiList.Count(); i++)
+            {
+                if (rsiList[i] != null && rsiList[i] > 48 && rsiList[i] < 52)
+                {
+                    var topRsiIndex = rsiList.GetRange(i, rsiList.Count() - i).FindIndex(x => x > 70);
+                    var lowRsiIndex = rsiList.GetRange(i, rsiList.Count() - i).FindIndex(x => x < 30);
+
+                    if (lowRsiIndex == -1 && topRsiIndex == -1)
+                    {
+                        if (lowRsiCount != 0)
+                        {
+                            result.Add(lowRsiCount);
+                            lowRsiCount = 0;
+                        }
+                        if (topRsiCount != 0)
+                        {
+                            result.Add(topRsiCount);
+                            topRsiCount = 0;
+                        }
+                        return result;
+                    }
+
+                    if ((topRsiIndex != -1 && topRsiIndex < lowRsiIndex) || (lowRsiIndex == -1 && topRsiIndex > 0))
+                    {
+                        topRsiCount++;
+                        if (lowRsiCount != 0)
+                        {
+                            result.Add(lowRsiCount);
+                            lowRsiCount = 0;
+                        }
+                        i += topRsiIndex;
+                    }
+                    if ((lowRsiIndex != -1 && lowRsiIndex < topRsiIndex) || (topRsiIndex == -1 && lowRsiIndex > 0))
+                    {
+                        lowRsiCount++;
+                        if (topRsiCount != 0)
+                        {
+                            result.Add(topRsiCount);
+                            topRsiCount = 0;
+                        }
+                        i += lowRsiIndex;
+                    }
+                }
+            }
+
+            if (lowRsiCount != 0)
+            {
+                result.Add(lowRsiCount);
+                lowRsiCount = 0;
+            }
+            if (topRsiCount != 0)
+            {
+                result.Add(topRsiCount);
+                topRsiCount = 0;
+            }
+            return result;
         }
 
         public async Task<InPositionRSISignalModel> GetInPositionRSISignal(string symbol, string interval, Position position)
@@ -63,7 +129,7 @@ namespace TradingDataLibrary.Implementations
             var rsiList = CalculateRSI(candles);
             var rsi = rsiList.Last().Value;
 
-            if (rsi > 65 || rsi < 35)
+            if (rsi > 70 || rsi < 30)
             {
                 var outputModel = new InPositionRSISignalModel
                 {
