@@ -131,7 +131,7 @@ namespace TradingDataLibrary.Implementations
             var rsiList = CalculateRSI(candles);
             var rsi = rsiList.Last().Value;
 
-            if (rsi > 70 || rsi < 30)
+            if ((rsi > 70 && position.IsLong()) || (rsi < 30 && !position.IsLong()))
             {
                 var outputModel = new InPositionRSISignalModel
                 {
