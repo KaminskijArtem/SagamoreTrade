@@ -51,7 +51,9 @@ namespace TradingDataLibrary.Implementations
                 {
                     signal.Text += "%E2%9D%A4";
                     signal.IsNotify = true;
-                    signal.IsLong = lastLowRsiIndex < lastHighRsiIndex && isOpenWithTrend;
+                    signal.IsLong = lastLowRsiIndex < lastHighRsiIndex;
+                    if (!isOpenWithTrend)
+                        signal.IsLong = !signal.IsLong;
                 }
             }
 
