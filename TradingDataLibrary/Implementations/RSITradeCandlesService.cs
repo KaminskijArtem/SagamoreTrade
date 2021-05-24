@@ -37,7 +37,7 @@ namespace TradingDataLibrary.Implementations
 
             if (position == null && (prevRsi < 30 || prevRsi > 70))
             {
-                var isShouldOpen = (prevRsi < 30 && rsi > 30) || (prevRsi > 70 && rsi < 70);
+                var isShouldOpen = (prevRsi < 30 && rsi > 30.5m) || (prevRsi > 70 && rsi < 69.5m);
 
                 if (isShouldOpen)
                 {
