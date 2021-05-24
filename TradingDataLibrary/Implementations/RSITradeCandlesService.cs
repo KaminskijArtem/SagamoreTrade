@@ -43,7 +43,7 @@ namespace TradingDataLibrary.Implementations
                 {
                     signal.Text += "%E2%9D%A4";
                     signal.IsNotify = true;
-                    signal.IsLong = prevRsi > 70;
+                    signal.IsLong = prevRsi < 30;
                 }
             }
 
