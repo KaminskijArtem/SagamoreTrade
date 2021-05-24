@@ -18,29 +18,29 @@ namespace TradingDataLibrary.Models
                 Symbol = "ETH/USD",
                 OpenPositionSymbol = "ETH%2FUSD_LEVERAGE",
                 Margin = 2,
-                PositionSize = 0.01
+                PositionSize = 0.02
             },
-            new Instrument
-            {
-                Symbol = "LTC/USD",
-                OpenPositionSymbol = "LTC%2FUSD_LEVERAGE",
-                Margin = 2,
-                PositionSize = 0.13
-            },
-            new Instrument
-            {
-                Symbol = "BCH/USD",
-                OpenPositionSymbol = "BCH%2FUSD_LEVERAGE",
-                Margin = 2,
-                PositionSize = 0.04
-            },
-            new Instrument
-            {
-                Symbol = "ETH/BTC",
-                OpenPositionSymbol = "ETH%2FBTC_LEVERAGE",
-                Margin = 2,
-                PositionSize = 0.01
-            },
+            //new Instrument
+            //{
+            //    Symbol = "LTC/USD",
+            //    OpenPositionSymbol = "LTC%2FUSD_LEVERAGE",
+            //    Margin = 2,
+            //    PositionSize = 0.13
+            //},
+            //new Instrument
+            //{
+            //    Symbol = "BCH/USD",
+            //    OpenPositionSymbol = "BCH%2FUSD_LEVERAGE",
+            //    Margin = 2,
+            //    PositionSize = 0.04
+            //},
+            //new Instrument
+            //{
+            //    Symbol = "ETH/BTC",
+            //    OpenPositionSymbol = "ETH%2FBTC_LEVERAGE",
+            //    Margin = 2,
+            //    PositionSize = 0.01
+            //},
             new Instrument
             {
                 Symbol = "US500",

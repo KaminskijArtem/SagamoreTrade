@@ -22,10 +22,11 @@ namespace TradingDataLibrary.Implementations
 
             var rsiList = CalculateRSI(candles);
             var rsi = decimal.Round(rsiList.Last().Value, 2);
+            var prevRsi = rsiList[^2].Value;
 
             var signal = new RSISignalModel();
 
-            if (position == null && !(rsi > 48 && rsi < 52))
+            if (position == null && prevRsi > 30 && prevRsi < 70)
                 return null;
 
             if (position != null && position.IsLong())
@@ -34,26 +35,15 @@ namespace TradingDataLibrary.Implementations
             if (position != null && !position.IsLong())
                 signal.Text += $"short ";
 
-            if (position == null && rsi > 48 && rsi < 52)
+            if (position == null && (prevRsi < 30 || prevRsi > 70))
             {
-                var lastHighRsiIndex = rsiList.FindLastIndex(x => x.Value > 70);
-                var lastLowRsiIndex = rsiList.FindLastIndex(x => x.Value < 30);
-
-                var rsiPeaks = CalculateRSIPeaks(rsiList);
-
-                var goodDealsIfOpositeTrend = rsiPeaks.Count(x => x == 1);
-                var goodDealsIfWithTrend = rsiPeaks.Where(x => x > 2).Sum(x => x - 2);
-
-                var isShouldOpen = goodDealsIfWithTrend != goodDealsIfOpositeTrend;
-                var isOpenWithTrend = goodDealsIfWithTrend > goodDealsIfOpositeTrend;
+                var isShouldOpen = (prevRsi < 30 && rsi > 30) || (prevRsi > 70 && rsi < 70);
 
                 if (isShouldOpen)
                 {
                     signal.Text += "%E2%9D%A4";
                     signal.IsNotify = true;
-                    signal.IsLong = lastLowRsiIndex < lastHighRsiIndex;
-                    if (!isOpenWithTrend)
-                        signal.IsLong = !signal.IsLong;
+                    signal.IsLong = prevRsi > 70;
                 }
             }
 
@@ -131,7 +121,7 @@ namespace TradingDataLibrary.Implementations
             var rsiList = CalculateRSI(candles);
             var rsi = rsiList.Last().Value;
 
-            if (((rsi > 65 || rsi < 30) && position.IsLong()) || ((rsi < 35 || rsi > 70) && !position.IsLong()))
+            if ((rsi > 50 && position.IsLong()) || (rsi < 50 && !position.IsLong()))
             {
                 var outputModel = new InPositionRSISignalModel
                 {
