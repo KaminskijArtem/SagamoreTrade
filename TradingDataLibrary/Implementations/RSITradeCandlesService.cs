@@ -23,10 +23,14 @@ namespace TradingDataLibrary.Implementations
             var rsiList = CalculateRSI(candles);
             var rsi = decimal.Round(rsiList.Last().Value, 2);
             var prevRsi = rsiList[^2].Value;
+            var prevPrevRsi = rsiList[^3].Value;
+
+            var isWasOverBuy = prevRsi > 70 || prevPrevRsi > 70;
+            var isWasOverSold = prevRsi < 30 || prevPrevRsi < 30;
 
             var signal = new RSISignalModel();
 
-            if (position == null && prevRsi > 30 && prevRsi < 70)
+            if (position == null && !isWasOverBuy && !isWasOverSold)
                 return null;
 
             if (position != null && position.IsLong())
@@ -35,15 +39,15 @@ namespace TradingDataLibrary.Implementations
             if (position != null && !position.IsLong())
                 signal.Text += $"short ";
 
-            if (position == null && (prevRsi < 30 || prevRsi > 70))
+            if (position == null && (isWasOverSold || isWasOverBuy))
             {
-                var isShouldOpen = (prevRsi < 30 && rsi > 30.5m) || (prevRsi > 70 && rsi < 69.5m);
+                var isShouldOpen = (isWasOverSold && rsi > 30 && rsi < 35) || (isWasOverBuy && rsi < 70 && rsi > 65);
 
                 if (isShouldOpen)
                 {
                     signal.Text += "%E2%9D%A4";
                     signal.IsNotify = true;
-                    signal.IsLong = prevRsi < 30;
+                    signal.IsLong = isWasOverSold;
                 }
             }
 
