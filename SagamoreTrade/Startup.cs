@@ -6,6 +6,7 @@ using Microsoft.Extensions.Hosting;
 using QuartzScheduler;
 using TelegramApiLibrary;
 using TradingDataLibrary;
+using DBServices;
 
 namespace SagamoreTrade
 {
@@ -26,6 +27,7 @@ namespace SagamoreTrade
             services.AddSchedulerServices();
             services.AddTradingDataServices();
             services.AddTelegramApiServices();
+            services.AddDBServices(Configuration["ConnectionString"]);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
