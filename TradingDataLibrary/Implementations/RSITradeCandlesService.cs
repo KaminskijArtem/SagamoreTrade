@@ -16,7 +16,7 @@ namespace TradingDataLibrary.Implementations
         {
             _candlesApiClient = candlesApiClient;
         }
-        public async Task<RSISignalModel> GetRSISignal(string symbol, string interval, Position position)
+        public async Task<RSISignalModel> GetRSISignal(string symbol, string interval, List<Position> positions)
         {
             var candles = await _candlesApiClient.GetCandles(symbol, interval);
 
@@ -29,6 +29,17 @@ namespace TradingDataLibrary.Implementations
             var isWasOverSold = prevRsi < 30 || prevPrevRsi < 30;
 
             var signal = new RSISignalModel();
+            
+            if (positions.Count < 2 && (rsi < 10 || rsi > 90))
+            {
+                signal.Text += "%E2%9D%A4%E2%9D%A4";
+                signal.IsNotify = true;
+                signal.IsLong = rsi < 10;
+                signal.Text += $"{rsi}%";
+                return signal;
+            }
+
+            var position = positions.FirstOrDefault();
 
             if (position == null && !isWasOverBuy && !isWasOverSold)
                 return null;
