@@ -18,7 +18,7 @@ namespace QuartzScheduler.Jobs
         private readonly ITelegramApiClient _telegramApiClient;
         private readonly IPositionsApiClient _positionsApiClient;
 
-        readonly string interval = "5m";
+        readonly string interval = "1h";
 
         public BuyJob(IRSITradeCandlesService tradeCandlesService,
             ITelegramApiClient telegramApiClient,
