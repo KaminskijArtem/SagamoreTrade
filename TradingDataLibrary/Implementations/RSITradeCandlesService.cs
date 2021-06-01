@@ -30,9 +30,17 @@ namespace TradingDataLibrary.Implementations
 
             var signal = new RSISignalModel();
             
-            if (positions.Count < 2 && (rsi < 10 || rsi > 90))
+            if (positions.Count < 2 && (rsi < 20 || rsi > 80))
             {
                 signal.Text += "%E2%9D%A4%E2%9D%A4";
+                signal.IsNotify = true;
+                signal.IsLong = rsi < 20;
+                signal.Text += $"{rsi}%";
+                return signal;
+            }
+            if (positions.Count < 3 && (rsi < 10 || rsi > 90))
+            {
+                signal.Text += "%E2%9D%A4%E2%9D%A4%E2%9D%A4";
                 signal.IsNotify = true;
                 signal.IsLong = rsi < 10;
                 signal.Text += $"{rsi}%";
