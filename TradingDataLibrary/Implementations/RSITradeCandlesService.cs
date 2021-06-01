@@ -33,7 +33,7 @@ namespace TradingDataLibrary.Implementations
             if (positions.Count < 2 && (rsi < 10 || rsi > 90))
             {
                 signal.Text += "%E2%9D%A4%E2%9D%A4";
-                //signal.IsNotify = true;
+                signal.IsNotify = true;
                 signal.IsLong = rsi < 10;
                 signal.Text += $"{rsi}%";
                 return signal;
@@ -57,7 +57,7 @@ namespace TradingDataLibrary.Implementations
                 if (isShouldOpen)
                 {
                     signal.Text += "%E2%9D%A4";
-                    //signal.IsNotify = true;
+                    signal.IsNotify = true;
                     signal.IsLong = isWasOverSold;
                 }
             }
