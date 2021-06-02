@@ -1,4 +1,5 @@
 using NetTrader.Indicator;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -21,7 +22,7 @@ namespace TradingDataLibrary.Implementations
             var candles = await _candlesApiClient.GetCandles(symbol, interval);
 
             var rsiList = CalculateRSI(candles);
-            var rsi = decimal.Round(rsiList.Last().Value, 2);
+            var rsi = Math.Round(rsiList.Last().Value, 2);
             var prevRsi = rsiList[^2].Value;
             var prevPrevRsi = rsiList[^3].Value;
 
@@ -148,7 +149,7 @@ namespace TradingDataLibrary.Implementations
             {
                 var outputModel = new InPositionRSISignalModel
                 {
-                    Text = $"{decimal.Round(rsi, 2)}%",
+                    Text = $"{Math.Round(rsi, 2)}%",
                     ShouldClosePosition = true
                 };
                 return outputModel;
@@ -156,59 +157,25 @@ namespace TradingDataLibrary.Implementations
 
             return null;
         }
-        private List<decimal?> CalculateRSI(List<Candle> candles)
+        private List<double?> CalculateRSI(List<Candle> candles)
         {
-            // Add null values for first item, iteration will start from second item of OhlcList
-            var RS = new List<decimal?>();
-            var RSI = new List<decimal?>();
-
-            RS.Add(null);
-            RSI.Add(null);
-
-            decimal gainSum = 0;
-            decimal lossSum = 0;
-            for (int i = 1; i < N; i++)
-            {
-                decimal thisChange = candles[i].Close - candles[i - 1].Close;
-                if (thisChange > 0)
+            var ohlcList = candles.Select(x =>
+                new Ohlc
                 {
-                    gainSum += thisChange;
-                }
-                else
-                {
-                    lossSum += (-1) * thisChange;
-                }
-                RS.Add(null);
-                RSI.Add(null);
-            }
+                    Open = (double)x.Open,
+                    Close = (double)x.Close,
+                    High = (double)x.High,
+                    Low = (double)x.Low,
+                    Volume = x.Volume,
+                    Date = x.OpenTime.UtcDateTime
 
-            var averageGain = gainSum / N;
-            var averageLoss = lossSum / N;
-            var rs = averageGain / averageLoss;
-            RS.Add(rs);
-            var rsi = 100 - (100 / (1 + rs));
-            RSI.Add(rsi);
+                }).ToList();
 
-            for (int i = N + 1; i < candles.Count; i++)
-            {
-                decimal thisChange = candles[i].Close - candles[i - 1].Close;
-                if (thisChange > 0)
-                {
-                    averageGain = (averageGain * (N - 1) + thisChange) / N;
-                    averageLoss = (averageLoss * (N - 1)) / N;
-                }
-                else
-                {
-                    averageGain = (averageGain * (N - 1)) / N;
-                    averageLoss = (averageLoss * (N - 1) + (-1) * thisChange) / N;
-                }
-                rs = averageGain / averageLoss;
-                RS.Add(rs);
-                rsi = 100 - (100 / (1 + rs));
-                RSI.Add(rsi);
-            }
+            var RSI = new RSI(14);
+            RSI.Load(ohlcList);
+            var rsiSerie = RSI.Calculate();
+            return rsiSerie.RSI;
 
-            return RSI;
         }
     }
 }
