@@ -144,8 +144,13 @@ namespace TradingDataLibrary.Implementations
             var candles = await _candlesApiClient.GetCandles(symbol, interval);
             var rsiList = CalculateRSI(candles);
             var rsi = rsiList.Last().Value;
+            var currentPrice = candles.Last().Close;
+            var isShouldClose = (rsi > 70 && position.IsLong())
+                || (rsi > 50 && position.IsLong() && position.openPrice < currentPrice)
+                || (rsi < 30 && !position.IsLong()) 
+                || (rsi < 50 && !position.IsLong() && position.openPrice > currentPrice);
 
-            if ((rsi > 50 && position.IsLong()) || (rsi < 50 && !position.IsLong()))
+            if (isShouldClose)
             {
                 var outputModel = new InPositionRSISignalModel
                 {
