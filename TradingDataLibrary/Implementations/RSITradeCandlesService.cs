@@ -139,16 +139,16 @@ namespace TradingDataLibrary.Implementations
             return result;
         }
 
-        public async Task<InPositionRSISignalModel> GetInPositionRSISignal(string symbol, string interval, Position position)
+        public async Task<InPositionRSISignalModel> GetInPositionRSISignal(string symbol, string interval, Position position, IEnumerable<Position> allSymbolPositions)
         {
             var candles = await _candlesApiClient.GetCandles(symbol, interval);
             var rsiList = CalculateRSI(candles);
             var rsi = rsiList.Last().Value;
             var currentPrice = candles.Last().Close;
             var isShouldClose = (rsi > 70 && position.IsLong())
-                || (rsi > 50 && position.IsLong() && position.openPrice < currentPrice)
+                || (rsi > 50 && position.IsLong() && allSymbolPositions.All(x => x.openPrice < currentPrice))
                 || (rsi < 30 && !position.IsLong()) 
-                || (rsi < 50 && !position.IsLong() && position.openPrice > currentPrice);
+                || (rsi < 50 && !position.IsLong() && allSymbolPositions.All(x => x.openPrice > currentPrice));
 
             if (isShouldClose)
             {

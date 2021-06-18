@@ -7,6 +7,7 @@ using TradingDataLibrary.ApiClient;
 using TradingDataLibrary.Interfaces;
 using TradingDataLibrary.Logging;
 using TradingDataLibrary.Models;
+using System.Linq;
 
 namespace QuartzScheduler.Jobs
 {
@@ -44,7 +45,8 @@ namespace QuartzScheduler.Jobs
             {
                 try
                 {
-                    var signal = await _tradeCandlesService.GetInPositionRSISignal(position.symbol, interval, position);
+                    var signal = await _tradeCandlesService
+                        .GetInPositionRSISignal(position.symbol, interval, position, positions.PositionsList.Where(x => x.symbol == position.symbol));
                     if (signal != null)
                     {
                         if (!string.IsNullOrEmpty(text))
