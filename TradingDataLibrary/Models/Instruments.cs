@@ -4,7 +4,7 @@ namespace TradingDataLibrary.Models
 {
     public class GlobalValues
     {
-        public static List<Instrument> instruments = new List<Instrument>
+        public static List<Instrument> Instruments = new List<Instrument>
         {
             new Instrument
             {

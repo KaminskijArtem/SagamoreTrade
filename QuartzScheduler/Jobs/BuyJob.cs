@@ -46,7 +46,7 @@ namespace QuartzScheduler.Jobs
             string text = null;
             string openPositionText = null;
 
-            foreach (var instrument in GlobalValues.instruments)
+            foreach (var instrument in GlobalValues.Instruments)
             {
                 try
                 {

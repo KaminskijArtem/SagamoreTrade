@@ -12,12 +12,14 @@ namespace TradingDataLibrary.ApiClient
     {
         private readonly HttpClient client = new HttpClient();
 
-        public async Task<List<Candle>> GetCandles(string symbol, string interval)
+        public async Task<List<Candle>> GetCandles(string symbol, string interval, long? startTime = null, long? endTime = null)
         {
             Thread.Sleep(500);
+            var url = $"https://api-adapter.backend.currency.com/api/v1/klines?symbol={symbol}&interval={interval}&limit=1000";
 
-            var streamTask = client.GetStreamAsync(
-                $"https://api-adapter.backend.currency.com/api/v1/klines?symbol={symbol}&interval={interval}&limit=1000");
+            if(startTime != null && endTime != null)
+                url += $"&startTime={startTime}&endTime={endTime}";
+            var streamTask = client.GetStreamAsync(url);
             var output = new List<Candle>();
 
             var objCandles = await JsonSerializer.DeserializeAsync<List<List<JsonElement>>>(await streamTask);

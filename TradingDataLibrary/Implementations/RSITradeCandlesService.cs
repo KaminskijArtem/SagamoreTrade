@@ -74,71 +74,6 @@ namespace TradingDataLibrary.Implementations
             signal.Text += $"{rsi}%";
             return signal;
         }
-
-        private List<int> CalculateRSIPeaks(List<decimal?> rsiList)
-        {
-            var result = new List<int>();
-            var topRsiCount = 0;
-            var lowRsiCount = 0;
-
-            for (var i = 0; i < rsiList.Count(); i++)
-            {
-                if (rsiList[i] != null && rsiList[i] > 48 && rsiList[i] < 52)
-                {
-                    var topRsiIndex = rsiList.GetRange(i, rsiList.Count() - i).FindIndex(x => x > 70);
-                    var lowRsiIndex = rsiList.GetRange(i, rsiList.Count() - i).FindIndex(x => x < 30);
-
-                    if (lowRsiIndex == -1 && topRsiIndex == -1)
-                    {
-                        if (lowRsiCount != 0)
-                        {
-                            result.Add(lowRsiCount);
-                            lowRsiCount = 0;
-                        }
-                        if (topRsiCount != 0)
-                        {
-                            result.Add(topRsiCount);
-                            topRsiCount = 0;
-                        }
-                        return result;
-                    }
-
-                    if ((topRsiIndex != -1 && topRsiIndex < lowRsiIndex) || (lowRsiIndex == -1 && topRsiIndex > 0))
-                    {
-                        topRsiCount++;
-                        if (lowRsiCount != 0)
-                        {
-                            result.Add(lowRsiCount);
-                            lowRsiCount = 0;
-                        }
-                        i += topRsiIndex;
-                    }
-                    if ((lowRsiIndex != -1 && lowRsiIndex < topRsiIndex) || (topRsiIndex == -1 && lowRsiIndex > 0))
-                    {
-                        lowRsiCount++;
-                        if (topRsiCount != 0)
-                        {
-                            result.Add(topRsiCount);
-                            topRsiCount = 0;
-                        }
-                        i += lowRsiIndex;
-                    }
-                }
-            }
-
-            if (lowRsiCount != 0)
-            {
-                result.Add(lowRsiCount);
-                lowRsiCount = 0;
-            }
-            if (topRsiCount != 0)
-            {
-                result.Add(topRsiCount);
-                topRsiCount = 0;
-            }
-            return result;
-        }
-
         public async Task<InPositionRSISignalModel> GetInPositionRSISignal(string symbol, string interval, Position position, IEnumerable<Position> allSymbolPositions)
         {
             var candles = await _candlesApiClient.GetCandles(symbol, interval);
@@ -181,6 +116,11 @@ namespace TradingDataLibrary.Implementations
             var rsiSerie = RSI.Calculate();
             return rsiSerie.RSI;
 
+        }
+
+        public async Task<StrategyInformationModel> GetStrategyInformation()
+        {
+            return new StrategyInformationModel();
         }
     }
 }
