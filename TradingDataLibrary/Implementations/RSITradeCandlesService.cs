@@ -145,17 +145,17 @@ namespace TradingDataLibrary.Implementations
             var rsiList = CalculateRSI(candles);
             var rsi = rsiList.Last().Value;
             var currentPrice = candles.Last().Close;
-            var isShouldClose = (rsi > 70 && position.IsLong())
-                || (rsi > 50 && position.IsLong() && allSymbolPositions.All(x => x.openPrice < currentPrice))
-                || (rsi < 30 && !position.IsLong()) 
+            var isShouldClose = (rsi > 50 && position.IsLong() && allSymbolPositions.All(x => x.openPrice < currentPrice))
                 || (rsi < 50 && !position.IsLong() && allSymbolPositions.All(x => x.openPrice > currentPrice));
 
-            if (isShouldClose)
+            var isShouldInform = (rsi > 70 && position.IsLong()) || (rsi < 30 && !position.IsLong());
+
+            if (isShouldClose || isShouldInform)
             {
                 var outputModel = new InPositionRSISignalModel
                 {
                     Text = $"{Math.Round(rsi, 2)}%",
-                    ShouldClosePosition = true
+                    ShouldClosePosition = isShouldClose
                 };
                 return outputModel;
             }
