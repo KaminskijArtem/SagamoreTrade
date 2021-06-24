@@ -60,6 +60,8 @@ namespace QuartzScheduler.Jobs
                             if (result)
                                 text += " закрыта";
                         }
+                        else
+                            text += " может стоит закрыть?";
                     }
                 }
                 catch (Exception ex)
