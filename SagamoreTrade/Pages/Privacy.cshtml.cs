@@ -1,19 +1,21 @@
 ﻿using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
+using TradingDataLibrary.Interfaces;
 
 namespace SagamoreTrade.Pages
 {
     public class PrivacyModel : PageModel
     {
-        private readonly ILogger<PrivacyModel> _logger;
+        private readonly IRSITradeCandlesService tradeCandlesService;
 
-        public PrivacyModel(ILogger<PrivacyModel> logger)
+        public PrivacyModel(IRSITradeCandlesService tradeCandlesService)
         {
-            _logger = logger;
+            this.tradeCandlesService = tradeCandlesService;
         }
 
-        public void OnGet()
+        public async void OnGet()
         {
+            var s = await tradeCandlesService.GetStrategyInformation();
         }
     }
 }

@@ -6,6 +6,7 @@ namespace TradingDataLibrary.ApiClient
 {
     public interface ICandlesApiClient
     {
-        Task<List<Candle>> GetCandles(string symbol, string interval);
+        Task<List<Candle>> GetCandles(string symbol, string interval, long? startTime = null, long? endTime = null);
+
     }
 }
