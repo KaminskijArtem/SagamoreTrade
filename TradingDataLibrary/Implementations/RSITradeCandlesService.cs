@@ -83,7 +83,8 @@ namespace TradingDataLibrary.Implementations
         public async Task<InPositionRSISignalModel> GetInPositionRSISignal(string symbol, string interval, Position position, IEnumerable<Position> allSymbolPositions)
         {
             var candles = await _candlesApiClient.GetCandles(symbol, interval);
-            return GetInPositionRSISignalByCandles(position, allSymbolPositions, candles, Strategy.Peaceful);
+            var instrument = GlobalValues.Instruments.Where(x => x.Symbol == symbol).First();
+            return GetInPositionRSISignalByCandles(position, allSymbolPositions, candles, instrument.Strategy);
         }
 
         private InPositionRSISignalModel GetInPositionRSISignalByCandles(Position position, IEnumerable<Position> allSymbolPositions, List<Candle> candles, Strategy strategy)
@@ -149,8 +150,10 @@ namespace TradingDataLibrary.Implementations
 
         public async Task<StrategyInformationModel> GetStrategyInformation()
         {
-            var result = new StrategyInformationModel();
-            result.DealResults = new Dictionary<string, List<(decimal DealResult, DateTimeOffset OpenDate, DateTimeOffset CloseDate)>>();
+            var result = new StrategyInformationModel
+            {
+                DealResults = new Dictionary<string, List<(decimal DealResult, DateTimeOffset OpenDate, DateTimeOffset CloseDate)>>()
+            };
             foreach (var instrument in GlobalValues.Instruments)
                 await AddResultsBySymbol(result, instrument.Symbol, 12, Strategy.Agressive);
 

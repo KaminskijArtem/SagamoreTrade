@@ -11,42 +11,48 @@ namespace TradingDataLibrary.Models
                 Symbol = "BTC/USD",
                 OpenPositionSymbol = "BTC%2FUSD_LEVERAGE",
                 Margin = 2,
-                PositionSize = 0.001
+                PositionSize = 0.001,
+                Strategy = Strategy.Agressive
             },
             new Instrument
             {
                 Symbol = "ETH/USD",
                 OpenPositionSymbol = "ETH%2FUSD_LEVERAGE",
                 Margin = 2,
-                PositionSize = 0.02
+                PositionSize = 0.02,
+                Strategy = Strategy.Agressive
             },
             new Instrument
             {
                 Symbol = "US500",
                 OpenPositionSymbol = "US500.",
                 Margin = 20,
-                PositionSize = 0.1
+                PositionSize = 0.1,
+                Strategy = Strategy.Agressive
             },
             new Instrument
             {
                 Symbol = "US30",
                 OpenPositionSymbol = "US30.",
                 Margin = 20,
-                PositionSize = 0.01
+                PositionSize = 0.01,
+                Strategy = Strategy.Agressive
             },
             new Instrument
             {
                 Symbol = "US100",
                 OpenPositionSymbol = "US100.",
                 Margin = 20,
-                PositionSize = 0.03
+                PositionSize = 0.03,
+                Strategy = Strategy.Agressive
             },
             new Instrument
             {
                 Symbol = "Gold",
                 OpenPositionSymbol = "Gold.",
                 Margin = 10,
-                PositionSize = 0.1
+                PositionSize = 0.1,
+                Strategy = Strategy.Peaceful
             }
         };
     }
@@ -57,5 +63,6 @@ namespace TradingDataLibrary.Models
         public int Margin { get; set; }
         public double PositionSize { get; set; }
         public string OpenPositionSymbol { get; set; }
+        public Strategy Strategy { get; set; }
     }
 }
