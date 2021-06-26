@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net.Http;
+using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -14,15 +16,18 @@ namespace TradingDataLibrary.ApiClient
 
         public async Task<List<Candle>> GetCandles(string symbol, string interval, long? startTime = null, long? endTime = null)
         {
-            Thread.Sleep(500);
             var url = $"https://api-adapter.backend.currency.com/api/v1/klines?symbol={symbol}&interval={interval}&limit=1000";
 
-            if(startTime != null && endTime != null)
-                url += $"&startTime={startTime}&endTime={endTime}";
-            var streamTask = client.GetStreamAsync(url);
+            if(startTime != null)
+                url += $"&startTime={startTime}";
+            if (endTime != null)
+                url += $"&endTime={endTime}";
+
+            var stream = await client.GetStreamAsync(url);
             var output = new List<Candle>();
 
-            var objCandles = await JsonSerializer.DeserializeAsync<List<List<JsonElement>>>(await streamTask);
+            var objCandles = await JsonSerializer.DeserializeAsync<List<List<JsonElement>>>(stream);
+
             foreach (var objCandle in objCandles)
             {
                 output.Add(new Candle
