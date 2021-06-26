@@ -103,6 +103,11 @@ namespace TradingDataLibrary.Implementations
                 || (rsi < 50 && !position.IsLong() && allSymbolPositions.All(x => x.openPrice > currentPrice))
                 || (rsi > 70 && position.IsLong()) || (rsi < 30 && !position.IsLong());
             }
+            else if (strategy == 4)
+            {
+                isShouldClose = (rsi > 50 && position.IsLong() && allSymbolPositions.All(x => x.openPrice < currentPrice))
+                || (rsi < 50 && !position.IsLong() && allSymbolPositions.All(x => x.openPrice > currentPrice));
+            }
 
             if (isShouldClose)
             {
@@ -143,7 +148,7 @@ namespace TradingDataLibrary.Implementations
             var result = new StrategyInformationModel();
             result.DealResults = new Dictionary<string, List<(decimal DealResult, DateTimeOffset OpenDate, DateTimeOffset CloseDate)>>();
             foreach (var instrument in GlobalValues.Instruments)
-                await AddResultsBySymbol(result, instrument.Symbol, 3, 1);
+                await AddResultsBySymbol(result, instrument.Symbol, 12, 4);
 
             var btcSum = result.DealResults["BTC/USD"].Sum(x => x.DealResult);
             var ethSum = result.DealResults["ETH/USD"].Sum(x => x.DealResult);
