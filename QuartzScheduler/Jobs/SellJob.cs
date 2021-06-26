@@ -73,7 +73,7 @@ namespace QuartzScheduler.Jobs
             {
                 try
                 {
-                    await _telegramApiClient.SendMessage(TelegramApiBots.SellBot, text);
+                    await _telegramApiClient.SendMessage(TelegramApiBot.SellBot, text);
                 }
                 catch (Exception ex)
                 {

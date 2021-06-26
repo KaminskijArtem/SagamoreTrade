@@ -1,6 +1,6 @@
 ﻿namespace TelegramApiLibrary
 {
-    public enum TelegramApiBots
+    public enum TelegramApiBot
     {
         InfoBot,
         SellBot,

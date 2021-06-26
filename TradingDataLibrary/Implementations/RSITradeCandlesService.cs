@@ -83,30 +83,30 @@ namespace TradingDataLibrary.Implementations
         public async Task<InPositionRSISignalModel> GetInPositionRSISignal(string symbol, string interval, Position position, IEnumerable<Position> allSymbolPositions)
         {
             var candles = await _candlesApiClient.GetCandles(symbol, interval);
-            return GetInPositionRSISignalByCandles(position, allSymbolPositions, candles, 4);
+            return GetInPositionRSISignalByCandles(position, allSymbolPositions, candles, Strategy.Peaceful);
         }
 
-        private InPositionRSISignalModel GetInPositionRSISignalByCandles(Position position, IEnumerable<Position> allSymbolPositions, List<Candle> candles, int strategy)
+        private InPositionRSISignalModel GetInPositionRSISignalByCandles(Position position, IEnumerable<Position> allSymbolPositions, List<Candle> candles, Strategy strategy)
         {
             var rsiList = CalculateRSI(candles);
             var rsi = rsiList.Last().Value;
             var currentPrice = candles.Last().Close;
             var isShouldClose = false;
 
-            if(strategy == 1)
-                isShouldClose = (rsi > 50 && position.IsLong()) || (rsi < 50 && !position.IsLong());
-            else if (strategy == 2)
-                isShouldClose = (rsi > 70 && position.IsLong()) || (rsi < 30 && !position.IsLong());
-            else if (strategy == 3)
+            switch (strategy)
             {
-                isShouldClose = (rsi > 50 && position.IsLong() && allSymbolPositions.All(x => x.openPrice < currentPrice))
-                || (rsi < 50 && !position.IsLong() && allSymbolPositions.All(x => x.openPrice > currentPrice))
-                || (rsi > 70 && position.IsLong()) || (rsi < 30 && !position.IsLong());
-            }
-            else if (strategy == 4)
-            {
-                isShouldClose = (rsi > 50 && position.IsLong() && allSymbolPositions.All(x => x.openPrice < currentPrice))
-                || (rsi < 50 && !position.IsLong() && allSymbolPositions.All(x => x.openPrice > currentPrice));
+                case Strategy.Agressive:
+                    {
+                        isShouldClose = (rsi > 50 && position.IsLong()) || (rsi < 50 && !position.IsLong());
+                        break;
+                    }
+                case Strategy.Peaceful:
+                    {
+                        isShouldClose = (rsi > 50 && position.IsLong() && allSymbolPositions.All(x => x.openPrice < currentPrice))
+                        || (rsi < 50 && !position.IsLong() && allSymbolPositions.All(x => x.openPrice > currentPrice));
+                        break;
+                    }
+                default: break;
             }
 
             if (isShouldClose)
@@ -148,7 +148,7 @@ namespace TradingDataLibrary.Implementations
             var result = new StrategyInformationModel();
             result.DealResults = new Dictionary<string, List<(decimal DealResult, DateTimeOffset OpenDate, DateTimeOffset CloseDate)>>();
             foreach (var instrument in GlobalValues.Instruments)
-                await AddResultsBySymbol(result, instrument.Symbol, 12, 4);
+                await AddResultsBySymbol(result, instrument.Symbol, 12, Strategy.Agressive);
 
             var btcSum = result.DealResults["BTC/USD"].Sum(x => x.DealResult);
             var ethSum = result.DealResults["ETH/USD"].Sum(x => x.DealResult);
@@ -160,7 +160,7 @@ namespace TradingDataLibrary.Implementations
             return result;
         }
 
-        private async Task AddResultsBySymbol(StrategyInformationModel result, string symbol, int monthCount, int strategy)
+        private async Task AddResultsBySymbol(StrategyInformationModel result, string symbol, int monthCount, Strategy strategy)
         {
             result.DealResults[symbol] = new List<(decimal DealResult, DateTimeOffset OpenDate, DateTimeOffset CloseDate)>();
 

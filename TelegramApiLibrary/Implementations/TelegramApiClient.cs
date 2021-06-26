@@ -15,44 +15,44 @@ namespace TelegramApiLibrary.Implementations
             _configuration = configuration;
             chatId = _configuration["TelegramConfiguration:ChatId"];
         }
-        public async Task<HttpResponseMessage> SendMessage(TelegramApiBots bot, string text)
+        public async Task<HttpResponseMessage> SendMessage(TelegramApiBot bot, string text)
         {
             string botToken = string.Empty;
             var counter = 0;
 
             switch (bot)
             {
-                case TelegramApiBots.InfoBot:
+                case TelegramApiBot.InfoBot:
                     {
                         botToken = _configuration["TelegramConfiguration:Bot1Token"];
                         counter = StaticCounter.counter++;
                         break;
                     }
-                case TelegramApiBots.SellBot:
+                case TelegramApiBot.SellBot:
                     {
                         botToken = _configuration["TelegramConfiguration:Bot2Token"];
                         counter = StaticCounter.counter2++;
                         break;
                     }
-                case TelegramApiBots.BuyBot:
+                case TelegramApiBot.BuyBot:
                     {
                         botToken = _configuration["TelegramConfiguration:Bot3Token"];
                         counter = StaticCounter.counter3++;
                         break;
                     }
-                case TelegramApiBots.NoLeverageInfoBot:
+                case TelegramApiBot.NoLeverageInfoBot:
                     {
                         botToken = _configuration["TelegramConfiguration:Bot4Token"];
                         counter = StaticCounter.counter4++;
                         break;
                     }
-                case TelegramApiBots.NoLeverageBuyBot:
+                case TelegramApiBot.NoLeverageBuyBot:
                     {
                         botToken = _configuration["TelegramConfiguration:Bot5Token"];
                         counter = StaticCounter.counter5++;
                         break;
                     }
-                case TelegramApiBots.NoLeverageSellBot:
+                case TelegramApiBot.NoLeverageSellBot:
                     {
                         botToken = _configuration["TelegramConfiguration:Bot6Token"];
                         counter = StaticCounter.counter6++;

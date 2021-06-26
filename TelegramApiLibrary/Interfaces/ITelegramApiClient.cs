@@ -5,6 +5,6 @@ namespace TelegramApiLibrary.Interfaces
 {
     public interface ITelegramApiClient
     {
-        Task<HttpResponseMessage> SendMessage(TelegramApiBots bot, string text);
+        Task<HttpResponseMessage> SendMessage(TelegramApiBot bot, string text);
     }
 }

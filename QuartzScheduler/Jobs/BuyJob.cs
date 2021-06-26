@@ -92,7 +92,7 @@ namespace QuartzScheduler.Jobs
             {
                 try
                 {
-                    await _telegramApiClient.SendMessage(TelegramApiBots.BuyBot, openPositionText);
+                    await _telegramApiClient.SendMessage(TelegramApiBot.BuyBot, openPositionText);
                 }
                 catch (Exception ex)
                 {
@@ -104,7 +104,7 @@ namespace QuartzScheduler.Jobs
             {
                 try
                 {
-                    await _telegramApiClient.SendMessage(TelegramApiBots.InfoBot, text);
+                    await _telegramApiClient.SendMessage(TelegramApiBot.InfoBot, text);
                 }
                 catch (Exception ex)
                 {
