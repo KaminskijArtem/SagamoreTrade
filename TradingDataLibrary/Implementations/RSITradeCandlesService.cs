@@ -92,6 +92,7 @@ namespace TradingDataLibrary.Implementations
             var rsi = rsiList.Last().Value;
             var currentPrice = candles.Last().Close;
             var isShouldClose = false;
+            var isNotify = false;
 
             switch (strategy)
             {
@@ -104,17 +105,20 @@ namespace TradingDataLibrary.Implementations
                     {
                         isShouldClose = (rsi > 50 && position.IsLong() && allSymbolPositions.All(x => x.openPrice < currentPrice))
                         || (rsi < 50 && !position.IsLong() && allSymbolPositions.All(x => x.openPrice > currentPrice));
+
+                        isNotify = (rsi > 70 && position.IsLong()) || (rsi < 30 && !position.IsLong());
+
                         break;
                     }
                 default: break;
             }
 
-            if (isShouldClose)
+            if (isShouldClose || isNotify)
             {
                 var outputModel = new InPositionRSISignalModel
                 {
                     Text = $"{Math.Round(rsi, 2)}%",
-                    ShouldClosePosition = true
+                    ShouldClosePosition = isShouldClose
                 };
                 return outputModel;
             }
