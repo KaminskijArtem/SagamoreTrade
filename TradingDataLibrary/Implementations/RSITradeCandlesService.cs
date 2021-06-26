@@ -83,7 +83,7 @@ namespace TradingDataLibrary.Implementations
         public async Task<InPositionRSISignalModel> GetInPositionRSISignal(string symbol, string interval, Position position, IEnumerable<Position> allSymbolPositions)
         {
             var candles = await _candlesApiClient.GetCandles(symbol, interval);
-            return GetInPositionRSISignalByCandles(position, allSymbolPositions, candles, 1);
+            return GetInPositionRSISignalByCandles(position, allSymbolPositions, candles, 4);
         }
 
         private InPositionRSISignalModel GetInPositionRSISignalByCandles(Position position, IEnumerable<Position> allSymbolPositions, List<Candle> candles, int strategy)
