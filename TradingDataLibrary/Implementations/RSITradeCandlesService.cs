@@ -23,18 +23,24 @@ namespace TradingDataLibrary.Implementations
             var lastCandle = candles.Last();
 
             var rsiSignal = GetRSISignalByCandles(positions, candles);
-            var ema = await GetEMA200(symbol, "1d");
 
-            bool isWithGlobalTrend;
-            if (rsiSignal.IsLong)
-                isWithGlobalTrend = lastCandle.Close > ema;
-            else
-                isWithGlobalTrend = lastCandle.Close < ema;
+            if (rsiSignal != null && rsiSignal.IsNotify)
+            {
+                var ema = await GetEMA200(symbol, "1d");
 
-            if (isWithGlobalTrend)
-                return rsiSignal;
-            else
-                return null;
+                bool isWithGlobalTrend;
+                if (rsiSignal.IsLong)
+                    isWithGlobalTrend = lastCandle.Close > ema;
+                else
+                    isWithGlobalTrend = lastCandle.Close < ema;
+
+                if (isWithGlobalTrend)
+                    return rsiSignal;
+                else
+                    return null;
+            }
+
+            return rsiSignal;
         }
 
         private RSISignalModel GetRSISignalByCandles(List<Position> positions, List<Candle> candles)
