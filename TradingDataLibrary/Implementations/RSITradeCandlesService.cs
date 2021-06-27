@@ -20,8 +20,21 @@ namespace TradingDataLibrary.Implementations
         public async Task<RSISignalModel> GetRSISignal(string symbol, string interval, List<Position> positions)
         {
             var candles = await _candlesApiClient.GetCandles(symbol, interval);
+            var lastCandle = candles.Last();
 
-            return GetRSISignalByCandles(positions, candles);
+            var rsiSignal = GetRSISignalByCandles(positions, candles);
+            var ema = await GetEMA200(symbol, "1d");
+
+            bool isWithGlobalTrend;
+            if (rsiSignal.IsLong)
+                isWithGlobalTrend = lastCandle.Close > ema;
+            else
+                isWithGlobalTrend = lastCandle.Close < ema;
+
+            if (isWithGlobalTrend)
+                return rsiSignal;
+            else
+                return null;
         }
 
         private RSISignalModel GetRSISignalByCandles(List<Position> positions, List<Candle> candles)
@@ -181,9 +194,7 @@ namespace TradingDataLibrary.Implementations
 
             var interval = "1h";
 
-            var candles = await GetCandles(symbol, interval, monthCount);
-            var rsiListGlobal = CalculateRSI(candles);
-            var lastCandle = candles.Last();
+            var candles = await GetHistoricalData(symbol, interval, monthCount);
 
             var openPositions = new List<Position>();
 
@@ -209,7 +220,7 @@ namespace TradingDataLibrary.Implementations
                         else
                             position.openQuantity = -1;
 
-                        var ema = await GetMA200(symbol, position.openTimestamp);
+                        var ema = await GetEMA200(symbol, "1d", position.openTimestamp);
 
                         bool isWithGlobalTrend;
                         if (rsiSignal.IsLong)
@@ -217,7 +228,7 @@ namespace TradingDataLibrary.Implementations
                         else
                             isWithGlobalTrend = item.Close < ema;
 
-                        if(isWithGlobalTrend)
+                        if (isWithGlobalTrend)
                             openPositions.Add(position);
                     }
 
@@ -239,9 +250,9 @@ namespace TradingDataLibrary.Implementations
             }
         }
 
-        private async Task<decimal> GetMA200(string symbol, long openTimestamp)
+        private async Task<decimal> GetEMA200(string symbol, string timeFrame, long? openTimestamp = null)
         {
-            var candles = await _candlesApiClient.GetCandles(symbol, "1d", null, openTimestamp);
+            var candles = await _candlesApiClient.GetCandles(symbol, timeFrame, null, openTimestamp);
 
             var ohlcList = candles.Select(x =>
                     new Ohlc
@@ -261,23 +272,7 @@ namespace TradingDataLibrary.Implementations
             return (decimal)emaSerie.Values.Last().Value;
         }
 
-        private List<(double rsi, Candle candle)> GetCandlesWithRSI(List<Candle> candles, List<double?> rsi)
-        {
-            var result = new List<(double rsi, Candle candle)>();
-            for (int i = 0; i < rsi.Count(); i++)
-            {
-                if (rsi[i].HasValue)
-                {
-                    var tpl = (rsi[i].Value, candles[i]);
-                    result.Add(tpl);
-                }
-            }
-
-            return result;
-
-        }
-
-        private async Task<List<Candle>> GetCandles(string symbol, string interval, int monthCount)
+        private async Task<List<Candle>> GetHistoricalData(string symbol, string interval, int monthCount)
         {
             var candles = new List<Candle>();
 
@@ -304,7 +299,6 @@ namespace TradingDataLibrary.Implementations
             var orderedCandles = candles.OrderBy(x => x.OpenTime).ToList();
             return orderedCandles;
         }
-
 
     }
 }
