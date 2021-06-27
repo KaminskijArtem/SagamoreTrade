@@ -164,11 +164,19 @@ namespace TradingDataLibrary.Implementations
             var us500Sum = result.DealResults["US500"].Sum(x => x.DealResult);
             var GoldSum = result.DealResults["Gold"].Sum(x => x.DealResult);
 
+            var btcLast = result.DealResults["BTC/USD"].Last();
+            var ethLast = result.DealResults["ETH/USD"].Last();
+            var us30Last = result.DealResults["US30"].Last();
+            var us100Lst = result.DealResults["US100"].Last();
+            var us500Last = result.DealResults["US500"].Last();
+            var GoldLast = result.DealResults["Gold"].Last();
+
             return result;
         }
 
         private async Task AddResultsBySymbol(StrategyInformationModel result, string symbol, int monthCount, Strategy strategy)
         {
+            Console.WriteLine(symbol);
             result.DealResults[symbol] = new List<(decimal DealResult, DateTimeOffset OpenDate, DateTimeOffset CloseDate)>();
 
             var interval = "1h";
@@ -201,7 +209,16 @@ namespace TradingDataLibrary.Implementations
                         else
                             position.openQuantity = -1;
 
-                        openPositions.Add(position);
+                        var ema = await GetMA200(symbol, position.openTimestamp);
+
+                        bool isWithGlobalTrend;
+                        if (rsiSignal.IsLong)
+                            isWithGlobalTrend = item.Close > ema;
+                        else
+                            isWithGlobalTrend = item.Close < ema;
+
+                        if(isWithGlobalTrend)
+                            openPositions.Add(position);
                     }
 
                     var isClearPositions = false;
@@ -220,6 +237,28 @@ namespace TradingDataLibrary.Implementations
                         openPositions.Clear();
                 }
             }
+        }
+
+        private async Task<decimal> GetMA200(string symbol, long openTimestamp)
+        {
+            var candles = await _candlesApiClient.GetCandles(symbol, "1d", null, openTimestamp);
+
+            var ohlcList = candles.Select(x =>
+                    new Ohlc
+                    {
+                        Open = (double)x.Open,
+                        Close = (double)x.Close,
+                        High = (double)x.High,
+                        Low = (double)x.Low,
+                        Volume = x.Volume,
+                        Date = x.OpenTime.UtcDateTime
+
+                    }).ToList();
+
+            var ema = new EMA(200, true);
+            ema.Load(ohlcList);
+            var emaSerie = ema.Calculate();
+            return (decimal)emaSerie.Values.Last().Value;
         }
 
         private List<(double rsi, Candle candle)> GetCandlesWithRSI(List<Candle> candles, List<double?> rsi)

@@ -15,7 +15,7 @@ namespace SagamoreTrade.Pages
 
         public async void OnGet()
         {
-            var s = await tradeCandlesService.GetStrategyInformation();
+            //var s = await tradeCandlesService.GetStrategyInformation();
         }
     }
 }
