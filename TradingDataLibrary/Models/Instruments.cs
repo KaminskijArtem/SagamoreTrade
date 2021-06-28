@@ -28,7 +28,7 @@ namespace TradingDataLibrary.Models
                 OpenPositionSymbol = "US500.",
                 Margin = 20,
                 PositionSize = 0.1,
-                Strategy = Strategy.Agressive
+                Strategy = Strategy.Peaceful
             },
             new Instrument
             {
@@ -36,7 +36,7 @@ namespace TradingDataLibrary.Models
                 OpenPositionSymbol = "US30.",
                 Margin = 20,
                 PositionSize = 0.01,
-                Strategy = Strategy.Agressive
+                Strategy = Strategy.Peaceful
             },
             new Instrument
             {
