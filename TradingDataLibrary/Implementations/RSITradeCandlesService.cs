@@ -26,8 +26,9 @@ namespace TradingDataLibrary.Implementations
 
             if (rsiSignal != null && rsiSignal.IsNotify)
             {
-                var ema = await GetEMA200(symbol, "1d");
-
+                var ema = Math.Round(await GetEMA200(symbol, "1d"), 2);
+                var price = Math.Round(lastCandle.Close, 2);
+                rsiSignal.Text += $" ema:{ema} price:{price}";
                 bool isWithGlobalTrend;
                 if (rsiSignal.IsLong)
                     isWithGlobalTrend = lastCandle.Close > ema;
@@ -37,9 +38,8 @@ namespace TradingDataLibrary.Implementations
                 if (!isWithGlobalTrend)
                 {
                     rsiSignal.IsNotify = false;
-                    rsiSignal.Text += " -";
+                    rsiSignal.Text = rsiSignal.Text.Replace("%E2%9D%A4", "");
                 }
-
             }
 
             return rsiSignal;
