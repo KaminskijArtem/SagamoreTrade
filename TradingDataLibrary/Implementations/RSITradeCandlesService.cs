@@ -35,7 +35,10 @@ namespace TradingDataLibrary.Implementations
                     isWithGlobalTrend = lastCandle.Close < ema;
 
                 if (!isWithGlobalTrend)
+                {
                     rsiSignal.IsNotify = false;
+                    rsiSignal.Text += " -";
+                }
 
             }
 
@@ -118,6 +121,11 @@ namespace TradingDataLibrary.Implementations
                 case Strategy.Agressive:
                     {
                         isShouldClose = (rsi > 50 && position.IsLong()) || (rsi < 50 && !position.IsLong());
+                        break;
+                    }
+                case Strategy.Agressive3070:
+                    {
+                        isShouldClose = (rsi > 70 && position.IsLong()) || (rsi < 30 && !position.IsLong());
                         break;
                     }
                 case Strategy.Peaceful:
