@@ -34,10 +34,9 @@ namespace TradingDataLibrary.Implementations
                 else
                     isWithGlobalTrend = lastCandle.Close < ema;
 
-                if (isWithGlobalTrend)
-                    return rsiSignal;
-                else
-                    return null;
+                if (!isWithGlobalTrend)
+                    rsiSignal.IsNotify = false;
+
             }
 
             return rsiSignal;
