@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 
 namespace TradingDataLibrary.Models
 {
@@ -12,7 +12,7 @@ namespace TradingDataLibrary.Models
                 OpenPositionSymbol = "BTC%2FUSD_LEVERAGE",
                 Margin = 2,
                 PositionSize = 0.001,
-                Strategy = Strategy.Agressive
+                Strategy = Strategy.Agressive3070
             },
             new Instrument
             {
