@@ -6,8 +6,11 @@ namespace TradingDataLibrary.Models
 {
     public enum Strategy
     {
-        Agressive,
-        Peaceful,
-        Agressive3070
+        Agressive50,
+        Peaceful50,
+        Agressive3070,
+        Peaceful3070,
+        Medium50,
+        Medium3070
     }
 }

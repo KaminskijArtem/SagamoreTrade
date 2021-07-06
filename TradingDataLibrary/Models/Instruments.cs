@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace TradingDataLibrary.Models
 {
@@ -12,7 +12,7 @@ namespace TradingDataLibrary.Models
                 OpenPositionSymbol = "BTC%2FUSD_LEVERAGE",
                 Margin = 2,
                 PositionSize = 0.001,
-                Strategy = Strategy.Agressive3070
+                Strategy = Strategy.Medium3070
             },
             new Instrument
             {
@@ -20,7 +20,7 @@ namespace TradingDataLibrary.Models
                 OpenPositionSymbol = "ETH%2FUSD_LEVERAGE",
                 Margin = 2,
                 PositionSize = 0.02,
-                Strategy = Strategy.Agressive
+                Strategy = Strategy.Medium3070
             },
             new Instrument
             {
@@ -28,7 +28,7 @@ namespace TradingDataLibrary.Models
                 OpenPositionSymbol = "US500.",
                 Margin = 20,
                 PositionSize = 0.1,
-                Strategy = Strategy.Peaceful
+                Strategy = Strategy.Medium3070
             },
             new Instrument
             {
@@ -36,7 +36,7 @@ namespace TradingDataLibrary.Models
                 OpenPositionSymbol = "US30.",
                 Margin = 20,
                 PositionSize = 0.01,
-                Strategy = Strategy.Peaceful
+                Strategy = Strategy.Medium3070
             },
             new Instrument
             {
@@ -44,7 +44,7 @@ namespace TradingDataLibrary.Models
                 OpenPositionSymbol = "US100.",
                 Margin = 20,
                 PositionSize = 0.03,
-                Strategy = Strategy.Agressive
+                Strategy = Strategy.Medium3070
             },
             new Instrument
             {
@@ -52,7 +52,7 @@ namespace TradingDataLibrary.Models
                 OpenPositionSymbol = "Gold.",
                 Margin = 10,
                 PositionSize = 0.1,
-                Strategy = Strategy.Peaceful
+                Strategy = Strategy.Medium3070
             }
         };
     }

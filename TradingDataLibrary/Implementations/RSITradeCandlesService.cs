@@ -105,10 +105,10 @@ namespace TradingDataLibrary.Implementations
         {
             var candles = await _candlesApiClient.GetCandles(symbol, interval);
             var instrument = GlobalValues.Instruments.Where(x => x.Symbol == symbol).First();
-            return GetInPositionRSISignalByCandles(position, allSymbolPositions, candles, instrument.Strategy);
+            return await GetInPositionRSISignalByCandles(position, allSymbolPositions, candles, instrument.Strategy);
         }
 
-        private InPositionRSISignalModel GetInPositionRSISignalByCandles(Position position, IEnumerable<Position> allSymbolPositions, List<Candle> candles, Strategy strategy)
+        private async Task<InPositionRSISignalModel> GetInPositionRSISignalByCandles(Position position, IEnumerable<Position> allSymbolPositions, List<Candle> candles, Strategy strategy)
         {
             var rsiList = CalculateRSI(candles);
             var rsi = rsiList.Last().Value;
@@ -118,7 +118,7 @@ namespace TradingDataLibrary.Implementations
 
             switch (strategy)
             {
-                case Strategy.Agressive:
+                case Strategy.Agressive50:
                     {
                         isShouldClose = (rsi > 50 && position.IsLong()) || (rsi < 50 && !position.IsLong());
                         break;
@@ -128,7 +128,7 @@ namespace TradingDataLibrary.Implementations
                         isShouldClose = (rsi > 70 && position.IsLong()) || (rsi < 30 && !position.IsLong());
                         break;
                     }
-                case Strategy.Peaceful:
+                case Strategy.Peaceful50:
                     {
                         isShouldClose = (rsi > 50 && position.IsLong() && allSymbolPositions.All(x => x.openPrice < currentPrice))
                         || (rsi < 50 && !position.IsLong() && allSymbolPositions.All(x => x.openPrice > currentPrice));
@@ -137,7 +137,61 @@ namespace TradingDataLibrary.Implementations
 
                         break;
                     }
-                default: break;
+                case Strategy.Peaceful3070:
+                    {
+                        isShouldClose = (rsi > 70 && position.IsLong() && allSymbolPositions.All(x => x.openPrice < currentPrice))
+                        || (rsi < 30 && !position.IsLong() && allSymbolPositions.All(x => x.openPrice > currentPrice));
+
+                        isNotify = (rsi > 70 && position.IsLong()) || (rsi < 30 && !position.IsLong());
+
+                        break;
+                    }
+                case Strategy.Medium50:
+                    {
+                        if ((rsi > 50 && position.IsLong()) || (rsi < 50 && !position.IsLong()))
+                        {
+                            var ema = await GetEMA200(position.symbol, "1d", null);
+                            var isWithGlobalTrend = IsWithGlobalTrend(candles.Last(), position.IsLong(), ema);
+
+                            if (!isWithGlobalTrend)
+                            {
+                                isShouldClose = true;
+                            }
+                            if (isWithGlobalTrend)
+                            {
+                                if ((rsi > 50 && position.IsLong() && allSymbolPositions.All(x => x.openPrice < currentPrice))
+                                    || (rsi < 50 && !position.IsLong() && allSymbolPositions.All(x => x.openPrice > currentPrice)))
+                                {
+                                    isShouldClose = true;
+                                }
+                            }
+                        }
+
+                        break;
+                    }
+                case Strategy.Medium3070:
+                    {
+                        if ((rsi > 70 && position.IsLong()) || (rsi < 30 && !position.IsLong()))
+                        {
+                            var ema = await GetEMA200(position.symbol, "1d", null);
+                            var isWithGlobalTrend = IsWithGlobalTrend(candles.Last(), position.IsLong(), ema);
+
+                            if (!isWithGlobalTrend)
+                            {
+                                isShouldClose = true;
+                            }
+                            if (isWithGlobalTrend)
+                            {
+                                if ((rsi > 70 && position.IsLong() && allSymbolPositions.All(x => x.openPrice < currentPrice))
+                                    || (rsi < 30 && !position.IsLong() && allSymbolPositions.All(x => x.openPrice > currentPrice)))
+                                {
+                                    isShouldClose = true;
+                                }
+                            }
+                        }
+
+                        break;
+                    }
             }
 
             if (isShouldClose || isNotify)
@@ -181,7 +235,7 @@ namespace TradingDataLibrary.Implementations
                 DealResults = new Dictionary<string, List<(decimal DealResult, DateTimeOffset OpenDate, DateTimeOffset CloseDate)>>()
             };
             foreach (var instrument in GlobalValues.Instruments)
-                await AddResultsBySymbol(result, instrument.Symbol, 12, Strategy.Agressive);
+                await AddResultsBySymbol(result, instrument.Symbol, 12, Strategy.Agressive3070);
 
             var btcSum = result.DealResults["BTC/USD"].Sum(x => x.DealResult);
             var ethSum = result.DealResults["ETH/USD"].Sum(x => x.DealResult);
@@ -234,12 +288,7 @@ namespace TradingDataLibrary.Implementations
                             position.openQuantity = -1;
 
                         var ema = await GetEMA200(symbol, "1d", position.openTimestamp);
-
-                        bool isWithGlobalTrend;
-                        if (rsiSignal.IsLong)
-                            isWithGlobalTrend = item.Close > ema;
-                        else
-                            isWithGlobalTrend = item.Close < ema;
+                        var isWithGlobalTrend = IsWithGlobalTrend(item, rsiSignal.IsLong, ema);
 
                         if (isWithGlobalTrend)
                             openPositions.Add(position);
@@ -248,7 +297,7 @@ namespace TradingDataLibrary.Implementations
                     var isClearPositions = false;
                     foreach (var position in openPositions)
                     {
-                        var inPositionSygnal = GetInPositionRSISignalByCandles(position, openPositions, last20Candles, strategy);
+                        var inPositionSygnal = await GetInPositionRSISignalByCandles(position, openPositions, last20Candles, strategy);
                         if (inPositionSygnal != null && inPositionSygnal.ShouldClosePosition)
                         {
                             isClearPositions = true;
@@ -261,6 +310,14 @@ namespace TradingDataLibrary.Implementations
                         openPositions.Clear();
                 }
             }
+        }
+
+        private bool IsWithGlobalTrend(Candle item, bool isLong, decimal ema)
+        {
+            if (isLong)
+                return item.Close > ema;
+            else
+                return item.Close < ema;
         }
 
         private async Task<decimal> GetEMA200(string symbol, string timeFrame, long? openTimestamp = null)
