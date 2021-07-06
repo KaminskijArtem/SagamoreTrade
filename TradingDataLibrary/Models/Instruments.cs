@@ -28,7 +28,7 @@ namespace TradingDataLibrary.Models
                 OpenPositionSymbol = "US500.",
                 Margin = 20,
                 PositionSize = 0.1,
-                Strategy = Strategy.Medium3070
+                Strategy = Strategy.Peaceful3070
             },
             new Instrument
             {
@@ -36,7 +36,7 @@ namespace TradingDataLibrary.Models
                 OpenPositionSymbol = "US30.",
                 Margin = 20,
                 PositionSize = 0.01,
-                Strategy = Strategy.Medium3070
+                Strategy = Strategy.Peaceful3070
             },
             new Instrument
             {
@@ -52,7 +52,7 @@ namespace TradingDataLibrary.Models
                 OpenPositionSymbol = "Gold.",
                 Margin = 10,
                 PositionSize = 0.1,
-                Strategy = Strategy.Medium3070
+                Strategy = Strategy.Peaceful3070
             }
         };
     }
